@@ -1,9 +1,9 @@
 package edu.brown.cs.student.tests;
 
-import edu.brown.cs.student.main.creators.Creator;
-import edu.brown.cs.student.main.exceptions.FactoryFailureException;
-import edu.brown.cs.student.main.utility.CSVParser;
-import edu.brown.cs.student.main.utility.Search;
+import edu.brown.cs.student.main.CSVParser.creators.Creator;
+import edu.brown.cs.student.main.CSVParser.exceptions.FactoryFailureException;
+import edu.brown.cs.student.main.CSVParser.utility.CSVParser;
+import edu.brown.cs.student.main.CSVParser.utility.Search;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;

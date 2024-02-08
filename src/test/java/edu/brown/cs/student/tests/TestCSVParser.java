@@ -1,12 +1,12 @@
 package edu.brown.cs.student.tests;
 
-import edu.brown.cs.student.main.creators.Creator;
-import edu.brown.cs.student.main.creators.CreatorFromRow;
-import edu.brown.cs.student.main.creators.IntCreator;
-import edu.brown.cs.student.main.creators.PersonCreator;
-import edu.brown.cs.student.main.exceptions.FactoryFailureException;
-import edu.brown.cs.student.main.objects.Person;
-import edu.brown.cs.student.main.utility.CSVParser;
+import edu.brown.cs.student.main.CSVParser.creators.Creator;
+import edu.brown.cs.student.main.CSVParser.creators.CreatorFromRow;
+import edu.brown.cs.student.main.CSVParser.creators.IntCreator;
+import edu.brown.cs.student.main.CSVParser.creators.PersonCreator;
+import edu.brown.cs.student.main.CSVParser.exceptions.FactoryFailureException;
+import edu.brown.cs.student.main.CSVParser.objects.Person;
+import edu.brown.cs.student.main.CSVParser.utility.CSVParser;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
