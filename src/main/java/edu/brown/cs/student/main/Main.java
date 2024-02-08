@@ -1,7 +1,7 @@
 package edu.brown.cs.student.main;
 
-import edu.brown.cs.student.main.exceptions.FactoryFailureException;
-import edu.brown.cs.student.main.utility.Utility;
+import edu.brown.cs.student.main.CSVParser.exceptions.FactoryFailureException;
+import edu.brown.cs.student.main.CSVParser.utility.Utility;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
