@@ -10,16 +10,18 @@ import spark.Route;
 
 public class LoadCSVHandler implements Route {
 
-  public LoadCSVHandler() {}
+  private List<List<String>> state;
+
+  public LoadCSVHandler(List<List<String>> state) {}
 
   @Override
   public Object handle(Request request, Response response) throws Exception {
     String csv = request.queryParams("csv");
-    List<List<String>> data = new CSVSource(csv).getData(csv);
+    this.state = new CSVSource(csv).getData(csv);
     Map<String, List<String>> responseMap = new HashMap<>();
 
-    for (int i = data.size() - 1; i >= 0; i--) {
-      responseMap.put("Row " + i, data.get(i));
+    for (int i = state.size() - 1; i >= 0; i--) {
+      responseMap.put("Row " + i, state.get(i));
     }
     return new LoadSuccessResponse().serialize();
   } // need to add error response
