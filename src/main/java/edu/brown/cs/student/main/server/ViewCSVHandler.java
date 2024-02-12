@@ -3,9 +3,7 @@ package edu.brown.cs.student.main.server;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -19,7 +17,7 @@ public class ViewCSVHandler implements Route {
 
   @Override
   public Object handle(Request request, Response response) throws Exception {
-    ArrayList<List<String>> responseList = new ArrayList<>();
+    List<List<String>> responseList = new ArrayList<>();
     if (state != null) {
       for (int i = state.getData().size() - 1; i >= 0; i--) {
         responseList.add(state.getData().get(i));
@@ -32,8 +30,8 @@ public class ViewCSVHandler implements Route {
         .serialize();
   }
 
-  public record ViewSuccessResponse(String response_type, ArrayList<List<String>> responseMap) {
-    public ViewSuccessResponse(ArrayList<List<String>> responseMap) {
+  public record ViewSuccessResponse(String response_type, List<List<String>> responseMap) {
+    public ViewSuccessResponse(List<List<String>> responseMap) {
       this("success", responseMap);
     }
 
