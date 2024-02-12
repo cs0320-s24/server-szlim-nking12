@@ -1,9 +1,7 @@
 package edu.brown.cs.student.main.server;
 
 import com.squareup.moshi.Moshi;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -12,7 +10,9 @@ public class LoadCSVHandler implements Route {
 
   private List<List<String>> state;
 
-  public LoadCSVHandler(List<List<String>> state) {}
+  public LoadCSVHandler(List<List<String>> state) {
+    this.state = state;
+  }
 
   @Override
   public Object handle(Request request, Response response) throws Exception {
@@ -20,6 +20,10 @@ public class LoadCSVHandler implements Route {
     this.state = new CSVSource(csv).getData(csv);
     return new LoadSuccessResponse().serialize();
   } // need to add error response
+
+  public List<List<String>> getState() {
+    return this.state;
+  }
 
   public record LoadSuccessResponse(String response_type) {
     public LoadSuccessResponse() {

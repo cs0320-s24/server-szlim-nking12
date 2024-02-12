@@ -12,23 +12,26 @@ import spark.Route;
 public class ViewCSVHandler implements Route {
   private final List<List<String>> state;
 
-
-  public ViewCSVHandler(List<List<String>> state){
+  public ViewCSVHandler(List<List<String>> state) {
     this.state = state;
   }
 
   @Override
   public Object handle(Request request, Response response) throws Exception {
     Map<String, List<String>> responseMap = new HashMap<>();
+    System.out.println(state);
     if (state != null) {
       for (int i = state.size() - 1; i >= 0; i--) {
         responseMap.put("Row " + i, state.get(i));
       }
       return new ViewSuccessResponse(responseMap).serialize();
     }
-
+    return new ViewFailureResponse(
+            "CSV has not been loaded."
+                + "Please use the load endpoint before attempting to view a CSV.")
+        .serialize(); // change this to a
+    // failure response
   }
-
 
   public record ViewSuccessResponse(String response_type, Map<String, List<String>> responseMap) {
     public ViewSuccessResponse(Map<String, List<String>> responseMap) {
@@ -45,13 +48,21 @@ public class ViewCSVHandler implements Route {
         JsonAdapter<ViewSuccessResponse> adapter = moshi.adapter(ViewSuccessResponse.class);
         return adapter.toJson(this);
       } catch (Exception e) {
-        // For debugging purposes, show in the console _why_ this fails
-        // Otherwise we'll just get an error 500 from the API in integration
-        // testing.
         e.printStackTrace();
         System.err.println("Error: " + e.getMessage());
         throw e;
       }
+    }
+  }
+
+  public record ViewFailureResponse(String resp) {
+
+    /**
+     * @return this response, serialized as Json
+     */
+    String serialize() {
+      Moshi moshi = new Moshi.Builder().build();
+      return moshi.adapter(ViewFailureResponse.class).toJson(this);
     }
   }
 }

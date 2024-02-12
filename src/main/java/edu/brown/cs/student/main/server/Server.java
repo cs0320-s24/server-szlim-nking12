@@ -10,7 +10,7 @@ public class Server {
   private static List<List<String>> state;
 
   public Server() {
-    int port = 3234;
+    int port = 3232;
     Spark.port(port);
 
     after(
