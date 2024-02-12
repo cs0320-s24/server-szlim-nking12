@@ -11,7 +11,7 @@ import java.util.List;
  */
 public class Search {
 
-  private CSVParser csvParser;
+  //  private CSVParser csvParser;
   private List<List<String>> parsed;
 
   private List<List<String>> finalRows;
@@ -19,13 +19,12 @@ public class Search {
   /**
    * Constructs a Search object with the provided CSVParser.
    *
-   * @param csvParser The CSVParser instance used for parsing CSV data.
    * @throws IOException If an I/O error occurs during CSV parsing.
    * @throws FactoryFailureException If object creation from CSV rows fail.
    */
-  public Search(CSVParser csvParser) throws IOException, FactoryFailureException {
-    this.csvParser = csvParser;
-    this.parsed = this.csvParser.parse();
+  public Search(List<List<String>> parsed) throws IOException, FactoryFailureException {
+    //    this.csvParser = csvParser;
+    this.parsed = parsed;
     this.finalRows = new ArrayList<>();
   }
   /**
@@ -94,7 +93,7 @@ public class Search {
       }
     } else {
       // It's a string, so use as a column name
-      List<String> firstRow = this.csvParser.getHeaders();
+      List<String> firstRow = this.parsed.get(0);
       colIndex = firstRow.indexOf(col.toLowerCase());
 
       // column name not found
@@ -118,7 +117,7 @@ public class Search {
    */
   private int preferredRowLength() {
     // get length of headers
-    int prefLength = this.csvParser.getHeaders().size();
+    int prefLength = this.parsed.get(0).size();
 
     if (prefLength == 0) { // if no headers, pref length is max number of rows
       for (List<String> rowData : this.parsed) {
