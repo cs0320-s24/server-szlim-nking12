@@ -2,6 +2,7 @@ package edu.brown.cs.student.main.server;
 
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,23 +19,21 @@ public class ViewCSVHandler implements Route {
 
   @Override
   public Object handle(Request request, Response response) throws Exception {
-    Map<String, List<String>> responseMap = new HashMap<>();
-    System.out.println(state);
+    ArrayList<List<String>> responseList = new ArrayList<>();
     if (state != null) {
       for (int i = state.getData().size() - 1; i >= 0; i--) {
-        responseMap.put("Row " + i, state.getData().get(i));
+        responseList.add(state.getData().get(i));
       }
-      return new ViewSuccessResponse(responseMap).serialize();
+      return new ViewSuccessResponse(responseList).serialize();
     }
     return new ViewFailureResponse(
             "CSV has not been loaded."
                 + "Please use the load endpoint before attempting to view a CSV.")
-        .serialize(); // change this to a
-    // failure response
+        .serialize();
   }
 
-  public record ViewSuccessResponse(String response_type, Map<String, List<String>> responseMap) {
-    public ViewSuccessResponse(Map<String, List<String>> responseMap) {
+  public record ViewSuccessResponse(String response_type, ArrayList<List<String>> responseMap) {
+    public ViewSuccessResponse(ArrayList<List<String>> responseMap) {
       this("success", responseMap);
     }
 

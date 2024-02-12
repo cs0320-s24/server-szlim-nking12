@@ -26,7 +26,7 @@ public class CSVSource implements Datasource {
   }
 
   @Override
-  public List<List<String>> cleanData(String filepath) {
+  public List<List<String>> cleanData(String filepath) throws IOException, FactoryFailureException {
     CSVParser parser = this.makeParser(filepath);
     try {
       data = parser.parse();
