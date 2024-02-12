@@ -11,9 +11,9 @@ import java.util.List;
 
 public class CSVSource implements Datasource {
 
-  public CSVSource(String filepath) {
-    this.getData(filepath);
-  }
+  private List<List<String>> data;
+
+  public CSVSource() {}
 
   private CSVParser makeParser(String filepath) {
     Reader reader = null;
@@ -25,9 +25,9 @@ public class CSVSource implements Datasource {
     return new CSVParser(reader, false, new Creator());
   }
 
-  public List<List<String>> getData(String filepath) {
+  @Override
+  public List<List<String>> cleanData(String filepath) {
     CSVParser parser = this.makeParser(filepath);
-    List data = null;
     try {
       data = parser.parse();
     } catch (IOException e) {
@@ -36,5 +36,10 @@ public class CSVSource implements Datasource {
       System.err.println("Factory Failure Exception: List of strings could not be created");
     }
     return data;
+  }
+
+  @Override
+  public List<List<String>> getData() {
+    return this.data;
   }
 }

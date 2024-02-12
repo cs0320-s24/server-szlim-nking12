@@ -1,3 +1,16 @@
 package edu.brown.cs.student.main.server;
 
-public class CensusAPISource implements Datasource {}
+import java.util.List;
+
+public class CensusAPISource implements Datasource {
+
+  @Override
+  public List<List<String>> getData() {
+    return null;
+  }
+
+  @Override
+  public List cleanData(String path) {
+    return null;
+  }
+}

@@ -2,14 +2,14 @@ package edu.brown.cs.student.main.server;
 
 import static spark.Spark.after;
 
-import java.util.List;
 import spark.Spark;
 
 public class Server {
 
-  private static List<List<String>> state;
+  private Datasource state;
 
-  public Server() {
+  public Server(Datasource state) {
+    this.state = state;
     int port = 3232;
     Spark.port(port);
 
@@ -19,7 +19,6 @@ public class Server {
           response.header("Access-Control-Allow-Methods", "*");
         });
 
-    state = null;
     Spark.get("loadcsv", new LoadCSVHandler(state));
     Spark.get("viewcsv", new ViewCSVHandler(state));
 
@@ -28,7 +27,7 @@ public class Server {
   }
 
   public static void main(String[] args) {
-    new Server();
+    new Server(new CSVSource());
     System.out.println("Server started; exiting main...");
   }
 }

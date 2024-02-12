@@ -10,9 +10,9 @@ import spark.Response;
 import spark.Route;
 
 public class ViewCSVHandler implements Route {
-  private final List<List<String>> state;
+  private final Datasource state;
 
-  public ViewCSVHandler(List<List<String>> state) {
+  public ViewCSVHandler(Datasource state) {
     this.state = state;
   }
 
@@ -21,8 +21,8 @@ public class ViewCSVHandler implements Route {
     Map<String, List<String>> responseMap = new HashMap<>();
     System.out.println(state);
     if (state != null) {
-      for (int i = state.size() - 1; i >= 0; i--) {
-        responseMap.put("Row " + i, state.get(i));
+      for (int i = state.getData().size() - 1; i >= 0; i--) {
+        responseMap.put("Row " + i, state.getData().get(i));
       }
       return new ViewSuccessResponse(responseMap).serialize();
     }
