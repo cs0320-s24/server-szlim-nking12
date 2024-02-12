@@ -18,11 +18,6 @@ public class LoadCSVHandler implements Route {
   public Object handle(Request request, Response response) throws Exception {
     String csv = request.queryParams("csv");
     this.state = new CSVSource(csv).getData(csv);
-    Map<String, List<String>> responseMap = new HashMap<>();
-
-    for (int i = state.size() - 1; i >= 0; i--) {
-      responseMap.put("Row " + i, state.get(i));
-    }
     return new LoadSuccessResponse().serialize();
   } // need to add error response
 
