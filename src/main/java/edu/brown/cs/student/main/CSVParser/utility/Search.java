@@ -57,21 +57,17 @@ public class Search {
                 + " has been skipped");
       } else {
         if (col == null) { // no given column
-          System.out.println("3: " + col);
           if (this.matchesNoCol(row, searchFor)) {
             this.finalRows.add(row); // if match found, add row
           }
         } else { // given column
-          System.out.println("2: " + col);
           if (this.matchesCol(row, searchFor, col)) {
-            System.out.println("1: " + col);
             this.finalRows.add(row); // if match found, add row
           }
         }
       }
     }
     this.searchOutput(); // print all rows
-    System.out.println("final rows" + this.finalRows);
     return this.finalRows;
   }
 
@@ -101,17 +97,14 @@ public class Search {
     } else {
       // It's a string, so use as a column name
       //      List<String> firstRow = this.parsed.get(0);
-      System.out.println("first row: " + this.headerRow);
       colIndex = headerRow.indexOf(col.toLowerCase());
 
       // column name not found
       if (colIndex == -1) {
-        System.out.println("beep");
         throw new ArrayIndexOutOfBoundsException();
       }
       if (colIndex >= 0 && colIndex < row.size()) {
         // compare lowercase value to lowercase of the search term
-        System.out.println("boop");
         return row.get(colIndex).toLowerCase().contains(searchFor.toLowerCase());
       }
     }

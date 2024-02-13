@@ -22,6 +22,12 @@ public class LoadCSVHandler implements Route {
   public Object handle(Request request, Response response) throws Exception {
     String csv = request.queryParams("csv");
     String headers = request.queryParams("headers");
+
+    // directory protection
+    if (!csv.contains("data/")) {
+      throw new IllegalArgumentException();
+    }
+
     boolean hasHeaders;
     if (headers == null) {
       hasHeaders = false;
