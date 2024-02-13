@@ -15,6 +15,7 @@ public class Search {
   private List<List<String>> parsed;
 
   private List<List<String>> finalRows;
+  private List<String> headerRow;
 
   /**
    * Constructs a Search object with the provided CSVParser.
@@ -22,10 +23,12 @@ public class Search {
    * @throws IOException If an I/O error occurs during CSV parsing.
    * @throws FactoryFailureException If object creation from CSV rows fail.
    */
-  public Search(List<List<String>> parsed) throws IOException, FactoryFailureException {
+  public Search(List<List<String>> parsed, List<String> headerRow)
+      throws IOException, FactoryFailureException {
     //    this.csvParser = csvParser;
     this.parsed = parsed;
     this.finalRows = new ArrayList<>();
+    this.headerRow = headerRow;
   }
   /**
    * Searches for rows in the CSV data based on the specified criteria.
@@ -54,17 +57,21 @@ public class Search {
                 + " has been skipped");
       } else {
         if (col == null) { // no given column
+          System.out.println("3: " + col);
           if (this.matchesNoCol(row, searchFor)) {
             this.finalRows.add(row); // if match found, add row
           }
         } else { // given column
+          System.out.println("2: " + col);
           if (this.matchesCol(row, searchFor, col)) {
+            System.out.println("1: " + col);
             this.finalRows.add(row); // if match found, add row
           }
         }
       }
     }
     this.searchOutput(); // print all rows
+    System.out.println("final rows" + this.finalRows);
     return this.finalRows;
   }
 
@@ -93,15 +100,18 @@ public class Search {
       }
     } else {
       // It's a string, so use as a column name
-      List<String> firstRow = this.parsed.get(0);
-      colIndex = firstRow.indexOf(col.toLowerCase());
+      //      List<String> firstRow = this.parsed.get(0);
+      System.out.println("first row: " + this.headerRow);
+      colIndex = headerRow.indexOf(col.toLowerCase());
 
       // column name not found
       if (colIndex == -1) {
+        System.out.println("beep");
         throw new ArrayIndexOutOfBoundsException();
       }
       if (colIndex >= 0 && colIndex < row.size()) {
         // compare lowercase value to lowercase of the search term
+        System.out.println("boop");
         return row.get(colIndex).toLowerCase().contains(searchFor.toLowerCase());
       }
     }
@@ -117,7 +127,7 @@ public class Search {
    */
   private int preferredRowLength() {
     // get length of headers
-    int prefLength = this.parsed.get(0).size();
+    int prefLength = this.headerRow.size();
 
     if (prefLength == 0) { // if no headers, pref length is max number of rows
       for (List<String> rowData : this.parsed) {

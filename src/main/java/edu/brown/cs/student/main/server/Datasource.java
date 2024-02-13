@@ -8,5 +8,7 @@ public interface Datasource {
 
   public List<List<String>> getData();
 
-  public List cleanData(String path) throws IOException, FactoryFailureException;
+  public List cleanData(String path, boolean headers) throws IOException, FactoryFailureException;
+
+  public List<String> getHeaderRow();
 }

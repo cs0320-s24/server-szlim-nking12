@@ -11,12 +11,25 @@ public class LoadCSVHandler implements Route {
 
   public LoadCSVHandler(Datasource state) {
     this.state = state;
+    if (!(this.state.getData() == null)) {
+      if (!this.state.getData().isEmpty()) {
+        this.state.getData().clear();
+      }
+    }
   }
 
   @Override
   public Object handle(Request request, Response response) throws Exception {
     String csv = request.queryParams("csv");
-    this.state.cleanData(csv);
+    String headers = request.queryParams("headers");
+    boolean hasHeaders;
+    if (headers == null) {
+      hasHeaders = false;
+    } else {
+      hasHeaders = headers.equalsIgnoreCase("true");
+    }
+    System.out.println(hasHeaders);
+    this.state.cleanData(csv, hasHeaders);
     return new LoadSuccessResponse().serialize();
   } // need to add error response
 

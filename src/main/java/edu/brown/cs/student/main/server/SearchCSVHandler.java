@@ -39,9 +39,9 @@ public class SearchCSVHandler implements Route {
   public List<List<String>> searchCSV(Request request) throws IOException, FactoryFailureException {
     String target = request.queryParams("target");
     String col = request.queryParams("col");
-    Search searcher = new Search(this.state.getData());
-    List<List<String>> searchResult = searcher.search(target, col);
-    return searchResult;
+    System.out.println("col" + col);
+    Search searcher = new Search(this.state.getData(), this.state.getHeaderRow());
+    return searcher.search(target, col);
   }
 
   public record ViewSuccessResponse(String response_type, Map<String, List<String>> responseMap) {

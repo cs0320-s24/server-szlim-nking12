@@ -12,24 +12,27 @@ import java.util.List;
 public class CSVSource implements Datasource {
 
   private List<List<String>> data;
+  private List<String> headerRow;
 
   public CSVSource() {}
 
-  private CSVParser makeParser(String filepath) {
+  private CSVParser<List<String>> makeParser(String filepath, boolean headers) {
     Reader reader = null;
     try {
       reader = new FileReader(filepath);
     } catch (FileNotFoundException e) {
       System.err.println("File not found");
     }
-    return new CSVParser(reader, false, new Creator());
+    return new CSVParser<>(reader, headers, new Creator());
   }
 
   @Override
-  public List<List<String>> cleanData(String filepath) throws IOException, FactoryFailureException {
-    CSVParser parser = this.makeParser(filepath);
+  public List<List<String>> cleanData(String filepath, boolean headers)
+      throws IOException, FactoryFailureException {
+    CSVParser<List<String>> parser = this.makeParser(filepath, headers);
     try {
       data = parser.parse();
+      this.headerRow = parser.getHeaders();
     } catch (IOException e) {
       System.err.println(e.getMessage());
     } catch (FactoryFailureException j) {
@@ -41,5 +44,10 @@ public class CSVSource implements Datasource {
   @Override
   public List<List<String>> getData() {
     return this.data;
+  }
+
+  @Override
+  public List<String> getHeaderRow() {
+    return headerRow;
   }
 }
