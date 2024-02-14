@@ -7,9 +7,9 @@ import spark.Route;
 
 public class LoadCSVHandler implements Route {
 
-  private Datasource state;
+  private CSVSource state;
 
-  public LoadCSVHandler(Datasource state) {
+  public LoadCSVHandler(CSVSource state) {
     this.state = state;
     if (!(this.state.getData() == null)) {
       if (!this.state.getData().isEmpty()) {

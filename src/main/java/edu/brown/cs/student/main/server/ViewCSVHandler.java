@@ -10,9 +10,9 @@ import spark.Response;
 import spark.Route;
 
 public class ViewCSVHandler implements Route {
-  private final Datasource state;
+  private final CSVSource state;
 
-  public ViewCSVHandler(Datasource state) {
+  public ViewCSVHandler(CSVSource state) {
     this.state = state;
   }
 

@@ -6,10 +6,10 @@ import spark.Spark;
 
 public class Server {
 
-  private Datasource state;
+  private CSVSource state;
 
-  public Server(Datasource state) {
-    this.state = state;
+  public Server() {
+    this.state = new CSVSource();
     int port = 3232;
     Spark.port(port);
 
@@ -22,14 +22,14 @@ public class Server {
     Spark.get("loadcsv", new LoadCSVHandler(state));
     Spark.get("viewcsv", new ViewCSVHandler(state));
     Spark.get("searchcsv", new SearchCSVHandler(state));
-    Spark.get("broadband", new BroadbandHandler(state));
+    Spark.get("broadband", new BroadbandHandler());
 
     Spark.init();
     Spark.awaitInitialization();
   }
 
   public static void main(String[] args) {
-    new Server(new CSVSource());
+    new Server();
     System.out.println("Server started; exiting main...");
   }
 }

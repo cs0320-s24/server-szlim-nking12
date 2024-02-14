@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.List;
 
-public class CSVSource implements Datasource {
+public class CSVSource {
 
   private List<List<String>> data;
   private List<String> headerRow;
@@ -26,7 +26,7 @@ public class CSVSource implements Datasource {
     return new CSVParser<>(reader, headers, new Creator());
   }
 
-  @Override
+
   public List<List<String>> cleanData(String filepath, boolean headers)
       throws IOException, FactoryFailureException {
     CSVParser<List<String>> parser = this.makeParser(filepath, headers);
@@ -41,12 +41,12 @@ public class CSVSource implements Datasource {
     return data;
   }
 
-  @Override
+
   public List<List<String>> getData() {
     return this.data;
   }
 
-  @Override
+
   public List<String> getHeaderRow() {
     return headerRow;
   }

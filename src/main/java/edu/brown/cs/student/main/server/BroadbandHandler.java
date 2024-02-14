@@ -18,7 +18,7 @@ public class BroadbandHandler implements Route {
   private LocationCodes codeHandler;
   private Map<String, String> statecodes;
 
-  public BroadbandHandler(Datasource state) {
+  public BroadbandHandler() {
     this.codeHandler = new LocationCodes();
     this.statecodes = this.codeHandler.getStateCodes();
   }

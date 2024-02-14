@@ -4,7 +4,7 @@ import edu.brown.cs.student.main.CSVParser.exceptions.FactoryFailureException;
 import java.io.IOException;
 import java.util.List;
 
-public class CensusAPISource implements Datasource {
+public class CensusAPISource {
 
   private String county;
   private String state;
@@ -14,21 +14,6 @@ public class CensusAPISource implements Datasource {
     this.county = county;
     this.state = state;
     this.percentage = percentage;
-  }
-
-  @Override
-  public List<List<String>> getData() {
-    return null;
-  }
-
-  @Override
-  public List cleanData(String path, boolean headers) throws IOException, FactoryFailureException {
-    return null;
-  }
-
-  @Override
-  public List<String> getHeaderRow() {
-    return null;
   }
 
   @Override
