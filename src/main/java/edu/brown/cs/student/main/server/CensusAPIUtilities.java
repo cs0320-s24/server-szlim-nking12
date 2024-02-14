@@ -6,22 +6,19 @@ import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 
 public class CensusAPIUtilities {
   public CensusAPIUtilities() {}
 
-  public static List<CensusAPISource> deserializeCensusData(String jsonList) throws IOException {
-    List<CensusAPISource> censusDataList = new ArrayList<>();
+  public static List<List<String>> deserializeCensusData(String jsonList) throws IOException {
+    // List<CensusAPISource> censusDataList = new ArrayList<>();
     try {
       Moshi moshi = new Moshi.Builder().build();
-      Type listType = Types.newParameterizedType(List.class, CensusAPISource.class);
-      JsonAdapter<List<CensusAPISource>> adapter = moshi.adapter(listType);
+      Type listType = Types.newParameterizedType(List.class, List.class);
+      JsonAdapter<List<List<String>>> adapter = moshi.adapter(listType);
 
-      List<CensusAPISource> deserializedCensus = adapter.fromJson(jsonList);
-
-      return deserializedCensus;
+      return adapter.fromJson(jsonList);
     } catch (IOException e) {
       // In a real system, we wouldn't println like this, but it's useful for demonstration:
       System.err.println("BroadbandHandler: string wasn't valid JSON.");

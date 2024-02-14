@@ -6,6 +6,16 @@ import java.util.List;
 
 public class CensusAPISource implements Datasource {
 
+  private String county;
+  private String state;
+  private String percentage;
+
+  public CensusAPISource(String county, String state, String percentage) {
+    this.county = county;
+    this.state = state;
+    this.percentage = percentage;
+  }
+
   @Override
   public List<List<String>> getData() {
     return null;
@@ -19,5 +29,15 @@ public class CensusAPISource implements Datasource {
   @Override
   public List<String> getHeaderRow() {
     return null;
+  }
+
+  @Override
+  public String toString() {
+    return this.percentage
+        + "of households in"
+        + this.county
+        + " ,"
+        + this.state
+        + "have broadband access.";
   }
 }

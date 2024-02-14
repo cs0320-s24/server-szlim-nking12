@@ -15,31 +15,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CodeHandler {
+public class LocationCodes {
 
-  private Map<String, String> statecodes;
-  private Map<String, String> countycodes;
-  public CodeHandler(){
-    this.statecodes = new HashMap<>();
-    this.countycodes = new HashMap<>();
-  }
+  public LocationCodes() {}
 
-  public void getStateCodes() throws URISyntaxException, IOException, InterruptedException {
-    HttpRequest buildStateCodeRequest =
-        HttpRequest.newBuilder()
-            .uri(new URI("https://api.census.gov/data/2010/dec/sf1?get=NAME&for=state:*"))
-            .GET()
-            .build();
-
-    HttpResponse<String> sentStateCodeResponse =
-        HttpClient.newBuilder()
-            .build()
-            .send(buildStateCodeRequest, HttpResponse.BodyHandlers.ofString());
-    System.out.println(sentStateCodeResponse.body());
-
-    this.statecodes = new HashMap<>();
-
+  public Map<String, String> getStateCodes() {
     try {
+      HttpRequest buildStateCodeRequest =
+          HttpRequest.newBuilder()
+              .uri(new URI("https://api.census.gov/data/2010/dec/sf1?get=NAME&for=state:*"))
+              .GET()
+              .build();
+
+      HttpResponse<String> sentStateCodeResponse =
+          HttpClient.newBuilder()
+              .build()
+              .send(buildStateCodeRequest, HttpResponse.BodyHandlers.ofString());
+
+      Map<String, String> statecodes = new HashMap<>();
+
       Moshi moshi = new Moshi.Builder().build();
 
       Type mapType = Types.newParameterizedType(List.class, List.class);
@@ -50,27 +44,21 @@ public class CodeHandler {
       for (List<String> pair : adaptedResponse) {
         statecodes.put(pair.get(0), pair.get(1));
       }
-
-    }
-    // From the Moshi Docs (https://github.com/square/moshi):
-    //   "Moshi always throws a standard java.io.IOException if there is an error reading the JSON
-    // document, or if it is malformed. It throws a JsonDataException if the JSON document is
-    // well-formed, but doesn't match the expected format."
-    catch (IOException e) {
+      return statecodes;
+    } catch (IOException | URISyntaxException | JsonDataException | InterruptedException e) {
       // In a real system, we wouldn't println like this, but it's useful for demonstration:
-      System.err.println("OrderHandler: string wasn't valid JSON.");
-      throw e;
-    } catch (JsonDataException e) {
-      // In a real system, we wouldn't println like this, but it's useful for demonstration:
-      System.err.println("OrderHandler: JSON wasn't in the right format.");
-      throw e;
+      return null;
     }
   }
 
-  public void getCountyCodes(int stateCode) throws URISyntaxException, IOException, InterruptedException {
+  public Map<String, String> getCountyCodes(String stateCode)
+      throws URISyntaxException, IOException, InterruptedException {
     HttpRequest buildCountyCodeRequest =
         HttpRequest.newBuilder()
-            .uri(new URI("https://api.census.gov/data/2010/dec/sf1?get=NAME&for=county:*&in=state:" + stateCode))
+            .uri(
+                new URI(
+                    "https://api.census.gov/data/2010/dec/sf1?get=NAME&for=county:*&in=state:"
+                        + stateCode))
             .GET()
             .build();
 
@@ -80,7 +68,7 @@ public class CodeHandler {
             .send(buildCountyCodeRequest, HttpResponse.BodyHandlers.ofString());
     System.out.println(sentCountyCodeResponse.body());
 
-    this.countycodes = new HashMap<>();
+    Map<String, String> countycodes = new HashMap<>();
 
     try {
       Moshi moshi = new Moshi.Builder().build();
@@ -91,23 +79,18 @@ public class CodeHandler {
       List<List<String>> adaptedResponse = adapter.fromJson(sentCountyCodeResponse.body());
 
       for (List<String> pair : adaptedResponse) {
-        statecodes.put(pair.get(0), pair.get(2));
+        countycodes.put(pair.get(0), pair.get(2));
       }
+      return countycodes;
 
     }
     // From the Moshi Docs (https://github.com/square/moshi):
     //   "Moshi always throws a standard java.io.IOException if there is an error reading the JSON
     // document, or if it is malformed. It throws a JsonDataException if the JSON document is
     // well-formed, but doesn't match the expected format."
-    catch (IOException e) {
+    catch (IOException | JsonDataException e) {
       // In a real system, we wouldn't println like this, but it's useful for demonstration:
-      System.err.println("OrderHandler: string wasn't valid JSON.");
-      throw e;
-    } catch (JsonDataException e) {
-      // In a real system, we wouldn't println like this, but it's useful for demonstration:
-      System.err.println("OrderHandler: JSON wasn't in the right format.");
-      throw e;
+      return null;
     }
   }
-
 }
