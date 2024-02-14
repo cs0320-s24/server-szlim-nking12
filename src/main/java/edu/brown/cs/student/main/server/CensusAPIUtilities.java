@@ -10,9 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CensusAPIUtilities {
-  public CensusAPIUtilities(){
+  public CensusAPIUtilities() {}
 
-  }
   public static List<CensusAPISource> deserializeCensusData(String jsonList) throws IOException {
     List<CensusAPISource> censusDataList = new ArrayList<>();
     try {
@@ -23,8 +22,7 @@ public class CensusAPIUtilities {
       List<CensusAPISource> deserializedCensus = adapter.fromJson(jsonList);
 
       return deserializedCensus;
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       // In a real system, we wouldn't println like this, but it's useful for demonstration:
       System.err.println("BroadbandHandler: string wasn't valid JSON.");
       throw e;
@@ -34,5 +32,4 @@ public class CensusAPIUtilities {
       throw e;
     }
   }
-
 }

@@ -2,6 +2,8 @@ package edu.brown.cs.student.main.server;
 
 import static spark.Spark.after;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import spark.Spark;
 
 public class Server {
