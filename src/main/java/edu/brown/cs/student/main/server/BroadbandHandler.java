@@ -19,14 +19,15 @@ import spark.Response;
 import spark.Route;
 
 public class BroadbandHandler implements Route {
+  private CodeHandler codeHandler;
 
-  Map<String, String> statecodes;
-
-  public BroadbandHandler(Datasource state) {}
+  public BroadbandHandler(Datasource state) {
+    this.codeHandler = new CodeHandler();
+  }
 
   @Override
   public Object handle(Request request, Response response) throws Exception {
-    this.getStateCodes();
+    this.codeHandler.getStateCodes();
     String state = request.queryParams("state");
     String county = request.queryParams("county");
     return null;
@@ -55,48 +56,5 @@ public class BroadbandHandler implements Route {
     System.out.println(sentBoredApiResponse.body());
 
     return sentBoredApiResponse.body();
-  }
-
-  public void getStateCodes() throws URISyntaxException, IOException, InterruptedException {
-    HttpRequest buildStateCodeRequest =
-        HttpRequest.newBuilder()
-            .uri(new URI("https://api.census.gov/data/2010/dec/sf1?get=NAME&for=state:*"))
-            .GET()
-            .build();
-
-    HttpResponse<String> sentStateCodeResponse =
-        HttpClient.newBuilder()
-            .build()
-            .send(buildStateCodeRequest, HttpResponse.BodyHandlers.ofString());
-    System.out.println(sentStateCodeResponse.body());
-
-    this.statecodes = new HashMap<>();
-
-    try {
-      Moshi moshi = new Moshi.Builder().build();
-
-      Type mapType = Types.newParameterizedType(List.class, List.class);
-      JsonAdapter<List<List<String>>> adapter = moshi.adapter(mapType);
-
-      List<List<String>> adaptedResponse = adapter.fromJson(sentStateCodeResponse.body());
-
-      for (List<String> pair : adaptedResponse) {
-        statecodes.put(pair.get(0), pair.get(1));
-      }
-
-    }
-    // From the Moshi Docs (https://github.com/square/moshi):
-    //   "Moshi always throws a standard java.io.IOException if there is an error reading the JSON
-    // document, or if it is malformed. It throws a JsonDataException if the JSON document is
-    // well-formed, but doesn't match the expected format."
-    catch (IOException e) {
-      // In a real system, we wouldn't println like this, but it's useful for demonstration:
-      System.err.println("OrderHandler: string wasn't valid JSON.");
-      throw e;
-    } catch (JsonDataException e) {
-      // In a real system, we wouldn't println like this, but it's useful for demonstration:
-      System.err.println("OrderHandler: JSON wasn't in the right format.");
-      throw e;
-    }
   }
 }
