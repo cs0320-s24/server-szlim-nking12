@@ -12,13 +12,30 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
+/**
+ * A Spark Route handler for handling search requests on a CSV dataset.
+ * This class implements the Spark Route interface and is designed to handle HTTP GET requests.
+ */
+
 public class SearchCSVHandler implements Route {
   private final CSVSource state;
 
+  /**
+   * Constructs a new instance of SearchCSVHandler.
+   * @param state The CSV data source to be searched.
+   */
   public SearchCSVHandler(CSVSource state) {
     this.state = state;
   }
 
+  /**
+   * Handles an HTTP GET request for searching the CSV dataset based on query parameters.
+   *
+   * @param request  The HTTP request object.
+   * @param response The HTTP response object.
+   * @return A serialized response, either success or failure, in JSON format.
+   * @throws Exception Thrown if an error occurs during request handling.
+   */
   @Override
   public Object handle(Request request, Response response) throws Exception {
     Map<String, List<String>> responseMap = new HashMap<>();
@@ -36,6 +53,14 @@ public class SearchCSVHandler implements Route {
     // failure response
   }
 
+  /**
+   * Performs a search on the CSV based on parameters.
+   *
+   * @param request The HTTP request object containing search parameters.
+   * @return A list of search results as rows.
+   * @throws IOException             Thrown if an I/O error occurs during search.
+   * @throws FactoryFailureException Thrown if there is a failure during search.
+   */
   public List<List<String>> searchCSV(Request request) throws IOException, FactoryFailureException {
     String target = request.queryParams("target");
     String col = request.queryParams("col");
@@ -44,7 +69,13 @@ public class SearchCSVHandler implements Route {
     return searcher.search(target, col);
   }
 
+  /** Response object to send */
   public record ViewSuccessResponse(String response_type, Map<String, List<String>> responseMap) {
+    /**
+     * Constructs a ViewSuccessResponse with the given response map.
+     *
+     * @param responseMap The map containing search results.
+     */
     public ViewSuccessResponse(Map<String, List<String>> responseMap) {
       this("success", responseMap);
     }
@@ -66,6 +97,9 @@ public class SearchCSVHandler implements Route {
     }
   }
 
+  /**
+   * A record representing a failure response when viewing search results.
+   */
   public record ViewFailureResponse(String resp) {
 
     /**
