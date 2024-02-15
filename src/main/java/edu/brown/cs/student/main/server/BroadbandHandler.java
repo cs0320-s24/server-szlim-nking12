@@ -13,18 +13,31 @@ import java.util.Map;
 import spark.Request;
 import spark.Response;
 import spark.Route;
-
+/**
+ * A Spark Route handler for HTTP requests related to broadband data retrieval. It interacts with ACSDataSource to fetch information based on state and county parameters provided in the request.
+ * This class implements the Spark Route interface and is designed to handle HTTP GET requests.
+ */
 public class BroadbandHandler implements Route {
   private LocationCodes codeHandler;
   private Map<String, String> statecodes;
   private ACSDataSource source;
-
+  /**
+   * Constructs a BroadbandHandler instance with the provided ACSDataSource.
+   *
+   * @param source The ACSDataSource used for retrieving data.
+   */
   public BroadbandHandler(ACSDataSource source) {
     this.codeHandler = new LocationCodes();
     this.statecodes = this.codeHandler.getStateCodes();
     this.source = source;
   }
-
+  /**
+   * Handles HTTP requests related to broadband data retrieval.
+   *
+   * @param request The HTTP request containing parameters for data retrieval.
+   * @param response The HTTP response to be populated with the result.
+   * @return The JSON response containing broadband data or error information.
+   */
   @Override
   public Object handle(Request request, Response response) {
     Map<String, Object> responseMap = new HashMap<>();
