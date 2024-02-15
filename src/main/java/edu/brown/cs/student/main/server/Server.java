@@ -22,7 +22,7 @@ public class Server {
     Spark.get("loadcsv", new LoadCSVHandler(state));
     Spark.get("viewcsv", new ViewCSVHandler(state));
     Spark.get("searchcsv", new SearchCSVHandler(state));
-    Spark.get("broadband", new BroadbandHandler());
+    Spark.get("broadband", new BroadbandHandler(new ACSCaching(new CensusAPISource())));
 
     Spark.init();
     Spark.awaitInitialization();

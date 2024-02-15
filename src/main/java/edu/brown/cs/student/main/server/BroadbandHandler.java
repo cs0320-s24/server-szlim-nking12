@@ -19,10 +19,10 @@ public class BroadbandHandler implements Route {
   private Map<String, String> statecodes;
   private ACSDataSource source;
 
-  public BroadbandHandler() {
+  public BroadbandHandler(ACSDataSource source) {
     this.codeHandler = new LocationCodes();
     this.statecodes = this.codeHandler.getStateCodes();
-    this.source = null;
+    this.source = source;
   }
 
   @Override
@@ -65,8 +65,6 @@ public class BroadbandHandler implements Route {
         responseMap.put("error_type", "missing parameter");
         return adapter.toJson(responseMap);
       }
-
-      this.source = new ACSCaching(new CensusAPISource(), state, county);
 
       List<List<String>> data = this.source.getData(state, county);
       responseMap.put("type", "success");

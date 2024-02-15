@@ -6,13 +6,15 @@ import com.google.common.cache.LoadingCache;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 public class ACSCaching implements ACSDataSource {
   private final LoadingCache<String, List<List<String>>> cache;
+  private final CensusAPISource source;
 
-  public ACSCaching(CensusAPISource source, String statenum, String countynum) {
-
+  public ACSCaching(CensusAPISource source) {
+    this.source = source;
     this.cache =
         CacheBuilder.newBuilder()
             // How many entries maximum in the cache?
@@ -29,17 +31,24 @@ public class ACSCaching implements ACSDataSource {
                   public List<List<String>> load(String key)
                       throws DatasourceException, IOException, URISyntaxException,
                           InterruptedException {
-                    System.out.println("called load for: " + statenum + countynum);
+                    String[] k = key.split(",");
+                    System.out.println("called load for: " + k[0] + k[1]);
                     // If this isn't yet present in the cache, load it:
-                    return source.getData(statenum, countynum);
+                    return source.getData(k[0], k[1]);
                   }
                 });
   }
 
   @Override
   public List<List<String>> getData(String statenum, String countynum) {
-    List<List<String>> result = cache.getUnchecked(statenum);
-    // For debugging and demo (would remove in a "real" version):
+    String key = statenum + "," + countynum;
+    System.out.println("searching for: " + statenum + countynum);
+    List<List<String>> result = null;
+    try {
+      result = cache.get(key);
+    } catch (ExecutionException e) {
+      System.err.println(e.getMessage());
+    }
     System.out.println(cache.stats());
     return result;
   }
