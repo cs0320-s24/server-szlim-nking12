@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 
 public class ACSCaching {
-  private final Map<String,String> wrappedMap;
+  //private final Map<String,String> wrappedMap;
   private final LoadingCache<String, Collection<String>> cache;
 
   public ACSCaching(BroadbandHandler resultsToWrap, int time){
