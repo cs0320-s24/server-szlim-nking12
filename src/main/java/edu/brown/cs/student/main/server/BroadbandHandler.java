@@ -13,8 +13,10 @@ import java.util.Map;
 import spark.Request;
 import spark.Response;
 import spark.Route;
+
 /**
- * A Spark Route handler for HTTP requests related to broadband data retrieval. It interacts with ACSDataSource to fetch information based on state and county parameters provided in the request.
+ * A Spark Route handler for HTTP requests related to broadband data retrieval. It interacts with
+ * ACSDataSource to fetch information based on state and county parameters provided in the request.
  * This class implements the Spark Route interface and is designed to handle HTTP GET requests.
  */
 public class BroadbandHandler implements Route {

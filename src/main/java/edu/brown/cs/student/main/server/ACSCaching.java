@@ -8,8 +8,10 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+
 /**
- * A class that caches responses to improve performance and efficiency by avoiding excessive calls to CensusAPISource
+ * A class that caches responses to improve performance and efficiency by avoiding excessive calls
+ * to CensusAPISource
  *
  * This version uses a Guava cache class to manage the cache.
  */
@@ -21,14 +23,14 @@ public class ACSCaching implements ACSDataSource {
    *
    * @param source The CensusAPISource used to fetch data when not present in the cache.
    */
-  public ACSCaching(CensusAPISource source) {
+  public ACSCaching(CensusAPISource source, int duration, int entries) {
     this.source = source;
     this.cache =
         CacheBuilder.newBuilder()
             // How many entries maximum in the cache?
-            .maximumSize(200)
+            .maximumSize(entries)
             // How long should entries remain in the cache?
-            .expireAfterWrite(10, TimeUnit.MINUTES)
+            .expireAfterWrite(duration, TimeUnit.MINUTES)
             // Keep statistical info around for profiling purposes
             .recordStats()
             .build(

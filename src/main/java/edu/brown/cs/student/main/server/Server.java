@@ -3,11 +3,16 @@ package edu.brown.cs.student.main.server;
 import static spark.Spark.after;
 
 import spark.Spark;
-
+/**
+ * Top-level class for this demo. Contains the main() method which starts Spark and runs the various
+ * handlers.
+ */
 public class Server {
 
   private CSVSource state;
-
+  /**
+   * Constructs a Server instance, initializes Spark routes, and starts the HTTP server.
+   */
   public Server() {
     this.state = new CSVSource();
     int port = 3232;
@@ -22,12 +27,14 @@ public class Server {
     Spark.get("loadcsv", new LoadCSVHandler(state));
     Spark.get("viewcsv", new ViewCSVHandler(state));
     Spark.get("searchcsv", new SearchCSVHandler(state));
-    Spark.get("broadband", new BroadbandHandler(new ACSCaching(new CensusAPISource())));
+    Spark.get("broadband", new BroadbandHandler(new ACSCaching(new CensusAPISource(), 10, 200)));
 
     Spark.init();
     Spark.awaitInitialization();
   }
-
+  /**
+   * Main method to start the Server and print a message indicating that the server has started.
+   */
   public static void main(String[] args) {
     new Server();
     System.out.println("Server started; exiting main...");
