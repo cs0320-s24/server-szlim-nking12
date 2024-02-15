@@ -1,8 +1,8 @@
 package edu.brown.cs.student.main.server;
 
-import edu.brown.cs.student.main.server.CensusAPISource.CensusResponse;
+import java.util.List;
 
 public interface ACSDataSource {
 
-  CensusResponse getData(String statenum, String countynum) throws DatasourceException;
+  List<CensusResponse> getData(String statenum, String countynum) throws DatasourceException;
 }

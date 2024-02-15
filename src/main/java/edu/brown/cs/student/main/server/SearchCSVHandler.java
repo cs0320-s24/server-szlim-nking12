@@ -13,15 +13,15 @@ import spark.Response;
 import spark.Route;
 
 /**
- * A Spark Route handler for handling search requests on a CSV dataset.
- * This class implements the Spark Route interface and is designed to handle HTTP GET requests.
+ * A Spark Route handler for handling search requests on a CSV dataset. This class implements the
+ * Spark Route interface and is designed to handle HTTP GET requests.
  */
-
 public class SearchCSVHandler implements Route {
   private final CSVSource state;
 
   /**
    * Constructs a new instance of SearchCSVHandler.
+   *
    * @param state The CSV data source to be searched.
    */
   public SearchCSVHandler(CSVSource state) {
@@ -31,7 +31,7 @@ public class SearchCSVHandler implements Route {
   /**
    * Handles an HTTP GET request for searching the CSV dataset based on query parameters.
    *
-   * @param request  The HTTP request object.
+   * @param request The HTTP request object.
    * @param response The HTTP response object.
    * @return A serialized response, either success or failure, in JSON format.
    * @throws Exception Thrown if an error occurs during request handling.
@@ -58,7 +58,7 @@ public class SearchCSVHandler implements Route {
    *
    * @param request The HTTP request object containing search parameters.
    * @return A list of search results as rows.
-   * @throws IOException             Thrown if an I/O error occurs during search.
+   * @throws IOException Thrown if an I/O error occurs during search.
    * @throws FactoryFailureException Thrown if there is a failure during search.
    */
   public List<List<String>> searchCSV(Request request) throws IOException, FactoryFailureException {
@@ -97,9 +97,7 @@ public class SearchCSVHandler implements Route {
     }
   }
 
-  /**
-   * A record representing a failure response when viewing search results.
-   */
+  /** A record representing a failure response when viewing search results. */
   public record ViewFailureResponse(String resp) {
 
     /**

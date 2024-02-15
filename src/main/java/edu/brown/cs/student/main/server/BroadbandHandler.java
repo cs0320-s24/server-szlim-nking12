@@ -3,9 +3,9 @@ package edu.brown.cs.student.main.server;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
-import edu.brown.cs.student.main.server.CensusAPISource.CensusResponse;
 import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import spark.Request;
 import spark.Response;
@@ -51,7 +51,7 @@ public class BroadbandHandler implements Route {
     // Replies will be Maps from String to Object. This isn't ideal; see reflection...
     Type mapStringObject = Types.newParameterizedType(Map.class, String.class, Object.class);
     JsonAdapter<Map<String, Object>> adapter = moshi.adapter(mapStringObject);
-    JsonAdapter<CensusResponse> censusAdapter = moshi.adapter(CensusResponse.class);
+    // JsonAdapter<CensusResponse> censusAdapter = moshi.adapter(CensusResponse.class);
 
     if (state == null) {
       responseMap.put("state_arg", state);
@@ -62,10 +62,10 @@ public class BroadbandHandler implements Route {
     }
 
     try {
-      CensusResponse data = this.source.getData(state, county);
+      List<CensusResponse> data = this.source.getData(state, county);
       responseMap.put("type", "success"); // STOPPED HERE NEED TO CONTINUE FOLLOWING TEMPLATE
-      responseMap.put("place", data.NAME());
-      responseMap.put("percentage", data.S2802_C03_022E());
+      // responseMap.put("place", data.NAME());
+      // responseMap.put("percentage", data.S2802_C03_022E());
       return adapter.toJson(responseMap);
     } catch (DatasourceException e) {
     }

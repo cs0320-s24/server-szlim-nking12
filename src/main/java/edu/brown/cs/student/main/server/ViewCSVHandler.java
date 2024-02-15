@@ -8,14 +8,16 @@ import java.util.Map;
 import spark.Request;
 import spark.Response;
 import spark.Route;
+
 /**
- * A Spark Route handler for handling viewing a CSV dataset.
- * This class implements the Spark Route interface and is designed to handle HTTP GET requests.
+ * A Spark Route handler for handling viewing a CSV dataset. This class implements the Spark Route
+ * interface and is designed to handle HTTP GET requests.
  */
 public class ViewCSVHandler implements Route {
   private final CSVSource state;
   /**
    * Constructs a new instance of ViewCSVHandler.
+   *
    * @param state The CSV data source to be viewed.
    */
   public ViewCSVHandler(CSVSource state) {
@@ -24,7 +26,7 @@ public class ViewCSVHandler implements Route {
   /**
    * Handles an HTTP GET request for viewing the CSV dataset.
    *
-   * @param request  The HTTP request object.
+   * @param request The HTTP request object.
    * @param response The HTTP response object.
    * @return A serialized response, either success or failure, in JSON format.
    * @throws Exception Thrown if an error occurs during request handling.
@@ -65,9 +67,7 @@ public class ViewCSVHandler implements Route {
       }
     }
   }
-  /**
-   * A record representing a failure response when viewing the CSV.
-   */
+  /** A record representing a failure response when viewing the CSV. */
   public record ViewFailureResponse(String resp) {
 
     /**

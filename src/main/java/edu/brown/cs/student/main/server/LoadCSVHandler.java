@@ -4,15 +4,17 @@ import com.squareup.moshi.Moshi;
 import spark.Request;
 import spark.Response;
 import spark.Route;
+
 /**
- * A Spark Route handler for loading a CSV dataset.
- * This class implements the Spark Route interface and is designed to handle HTTP GET requests.
+ * A Spark Route handler for loading a CSV dataset. This class implements the Spark Route interface
+ * and is designed to handle HTTP GET requests.
  */
 public class LoadCSVHandler implements Route {
 
   private CSVSource state;
   /**
    * Constructs a new instance of LoadCSVHandler.
+   *
    * @param state The CSV data source to be searched.
    */
   public LoadCSVHandler(CSVSource state) {
@@ -26,7 +28,7 @@ public class LoadCSVHandler implements Route {
   /**
    * Handles an HTTP GET request for loading the CSV dataset.
    *
-   * @param request  The HTTP request object.
+   * @param request The HTTP request object.
    * @param response The HTTP response object.
    * @return A serialized response, either success or failure, in JSON format.
    * @throws Exception Thrown if an error occurs during request handling.
@@ -52,13 +54,9 @@ public class LoadCSVHandler implements Route {
     return new LoadSuccessResponse().serialize();
   } // need to add error response
 
-  /**
-   * A record representing a success response when loading a CSV file.
-   */
+  /** A record representing a success response when loading a CSV file. */
   public record LoadSuccessResponse(String response_type) {
-    /**
-     * Constructs a LoadSuccessResponse with the success message.
-     */
+    /** Constructs a LoadSuccessResponse with the success message. */
     public LoadSuccessResponse() {
       this("CSV file successfully loaded.");
     }

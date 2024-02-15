@@ -1,8 +1,8 @@
 package edu.brown.cs.student.main.server;
 
-import edu.brown.cs.student.main.server.CensusAPISource.CensusResponse;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ACSProxy implements ACSDataSource {
@@ -23,7 +23,8 @@ public class ACSProxy implements ACSDataSource {
   }
 
   @Override
-  public CensusResponse getData(String statenum, String countynum) throws DatasourceException {
+  public List<CensusResponse> getData(String statenum, String countynum)
+      throws DatasourceException {
     return null;
   }
 }
