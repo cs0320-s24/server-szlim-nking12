@@ -11,14 +11,14 @@ import java.util.List;
 public class CensusAPIUtilities {
   public CensusAPIUtilities() {}
 
-  public static List<CensusResponse> deserializeCensusData(String jsonList) throws IOException {
+  public static List<List<String>> deserializeCensusData(String jsonList) throws IOException {
     // List<CensusAPISource> censusDataList = new ArrayList<>();
     try {
       Moshi moshi = new Moshi.Builder().build();
-      Type listType = Types.newParameterizedType(List.class, CensusResponse.class);
-      JsonAdapter<List<CensusResponse>> adapter = moshi.adapter(listType);
+      Type listType = Types.newParameterizedType(List.class, List.class, String.class);
+      JsonAdapter<List<List<String>>> adapter = moshi.adapter(listType);
 
-      List<CensusResponse> response = adapter.fromJson(jsonList);
+      List<List<String>> response = adapter.fromJson(jsonList);
 
       return response;
 
@@ -26,12 +26,11 @@ public class CensusAPIUtilities {
       // In a real system, we wouldn't println like this, but it's useful for demonstration:
       System.err.println(e.getMessage());
       System.err.println("BroadbandHandler: string wasn't valid JSON.");
-      throw e;
     } catch (JsonDataException e) {
       // In a real system, we wouldn't println like this, but it's useful for demonstration:
       System.err.println(e.getMessage());
       System.err.println("BroadbandHandler: JSON wasn't in the right format.");
-      throw e;
     }
+    return null;
   }
 }

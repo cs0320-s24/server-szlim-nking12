@@ -12,55 +12,37 @@ public class CensusAPISource implements ACSDataSource {
 
   public CensusAPISource() {}
 
-  private static List<CensusResponse> getCensusData(String state, String county) {
-    try {
-      HttpRequest buildCensusRequest =
-          HttpRequest.newBuilder()
-              .uri(
-                  new URI(
-                      "https://api.census.gov/data/2021/acs/acs1/subject/"
-                          + "variables?get="
-                          + "NAME,S2802_C03_022E&for=county:"
-                          + county
-                          + "&in=state:"
-                          + state))
-              .GET()
-              .build();
+  private static List<List<String>> getCensusData(String state, String county)
+      throws DatasourceException, IOException, InterruptedException, URISyntaxException {
+    HttpRequest buildCensusRequest =
+        HttpRequest.newBuilder()
+            .uri(
+                new URI(
+                    "https://api.census.gov/data/2021/acs/acs1/subject/"
+                        + "variables?get="
+                        + "NAME,S2802_C03_022E&for=county:"
+                        + county
+                        + "&in=state:"
+                        + state))
+            .GET()
+            .build();
 
-      // Send that API request then store the response in this variable. Note the generic type.
-      HttpResponse<String> sentCensusResponse =
-          HttpClient.newBuilder()
-              .build()
-              .send(buildCensusRequest, HttpResponse.BodyHandlers.ofString());
+    HttpResponse<String> sentCensusResponse =
+        HttpClient.newBuilder()
+            .build()
+            .send(buildCensusRequest, HttpResponse.BodyHandlers.ofString());
 
-      List<CensusResponse> body =
-          CensusAPIUtilities.deserializeCensusData(sentCensusResponse.body());
+    List<List<String>> body = CensusAPIUtilities.deserializeCensusData(sentCensusResponse.body());
+    sentCensusResponse.statusCode();
 
-      // sentCensusResponse.statusCode();
-      //
-      //      if (body == null || body.NAME() == null || body.S2802_C03_022E() == null)
-      //        throw new DatasourceException("Malformed response from NWS");
-      //
-      //      return new CensusResponse(body.NAME(), body.S2802_C03_022E());
-      return body;
-    } catch (IOException | InterruptedException | URISyntaxException e) {
-      return null;
-    }
+    if (body == null) throw new DatasourceException("Malformed response from NWS");
+
+    return body;
   }
 
-  //  @Override
-  //  public String toString() {
-  //    return this.percentage
-  //        + "of households in"
-  //        + this.county
-  //        + " ,"
-  //        + this.state
-  //        + "have broadband access.";
-  //  }
-
   @Override
-  public List<CensusResponse> getData(String statenum, String countynum)
-      throws DatasourceException {
+  public List<List<String>> getData(String statenum, String countynum)
+      throws DatasourceException, IOException, InterruptedException, URISyntaxException {
     return getCensusData(statenum, countynum);
   }
 }
