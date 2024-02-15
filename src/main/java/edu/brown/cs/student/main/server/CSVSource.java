@@ -26,7 +26,6 @@ public class CSVSource {
     return new CSVParser<>(reader, headers, new Creator());
   }
 
-
   public List<List<String>> cleanData(String filepath, boolean headers)
       throws IOException, FactoryFailureException {
     CSVParser<List<String>> parser = this.makeParser(filepath, headers);
@@ -41,11 +40,9 @@ public class CSVSource {
     return data;
   }
 
-
   public List<List<String>> getData() {
     return this.data;
   }
-
 
   public List<String> getHeaderRow() {
     return headerRow;

@@ -4,16 +4,8 @@ import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 import edu.brown.cs.student.main.server.CensusAPISource.CensusResponse;
-import java.io.IOException;
 import java.lang.reflect.Type;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import spark.Request;
 import spark.Response;
@@ -22,7 +14,6 @@ import spark.Route;
 public class BroadbandHandler implements Route {
   private LocationCodes codeHandler;
   private Map<String, String> statecodes;
-
   private final CensusAPISource source;
 
   public BroadbandHandler() {
@@ -55,70 +46,73 @@ public class BroadbandHandler implements Route {
       county = "*";
     }
 
-      // Sends a request to the API and receives JSON back
-      Moshi moshi = new Moshi.Builder().build();
-      // Replies will be Maps from String to Object. This isn't ideal; see reflection...
-      Type mapStringObject = Types.newParameterizedType(Map.class, String.class, Object.class);
-      JsonAdapter<Map<String, Object>> adapter = moshi.adapter(mapStringObject);
-      JsonAdapter<CensusResponse> weatherDataAdapter = moshi.adapter(CensusResponse.class);
+    // Sends a request to the API and receives JSON back
+    Moshi moshi = new Moshi.Builder().build();
+    // Replies will be Maps from String to Object. This isn't ideal; see reflection...
+    Type mapStringObject = Types.newParameterizedType(Map.class, String.class, Object.class);
+    JsonAdapter<Map<String, Object>> adapter = moshi.adapter(mapStringObject);
+    JsonAdapter<CensusResponse> censusAdapter = moshi.adapter(CensusResponse.class);
 
-      if (state == null){
-        responseMap.put("state_arg", state);
-        responseMap.put("county_arg", county);
-        responseMap.put("type", "error");
-        responseMap.put("error_type", "missing parameter");
-        return adapter.toJson(responseMap);
-      }
+    if (state == null) {
+      responseMap.put("state_arg", state);
+      responseMap.put("county_arg", county);
+      responseMap.put("type", "error");
+      responseMap.put("error_type", "missing parameter");
+      return adapter.toJson(responseMap);
+    }
 
-      try{
-        CensusResponse data = this.source.getData(state, county);
-        responseMap.put("type", "success"); //STOPPED HERE NEED TO CONTINUE FOLLOWING TEMPLATE
-      } catch (DatasourceException e){}
+    try {
+      CensusResponse data = this.source.getData(state, county);
+      responseMap.put("type", "success"); // STOPPED HERE NEED TO CONTINUE FOLLOWING TEMPLATE
+      responseMap.put("place", data.NAME());
+      responseMap.put("percentage", data.S2802_C03_022E());
+      return adapter.toJson(responseMap);
+    } catch (DatasourceException e) {
+    }
 
-
-      String infoJson = this.sendRequest(state, county, responseMap);
-      List<List<String>> list = CensusAPIUtilities.deserializeCensusData(infoJson);
-      responseMap.put("result", "success");
-      responseMap.put("time retrieved", LocalDateTime.now().toString());
-      for (List<String> strings : list) {
-        responseMap.put(strings.get(0), strings.get(1) + "%");
-      }
-      return responseMap;
-//     catch (URISyntaxException | IOException | InterruptedException e) {
-//      responseMap.put("result", "Exception");
-//      responseMap.put("reason", e.getMessage());
-//    }
+    //      String infoJson = this.sendRequest(state, county, responseMap);
+    //      List<List<String>> list = CensusAPIUtilities.deserializeCensusData(infoJson);
+    //      responseMap.put("result", "success");
+    //      responseMap.put("time retrieved", LocalDateTime.now().toString());
+    //      for (List<String> strings : list) {
+    //        responseMap.put(strings.get(0), strings.get(1) + "%");
+    //      }
+    //      return responseMap;
+    //     catch (URISyntaxException | IOException | InterruptedException e) {
+    //      responseMap.put("result", "Exception");
+    //      responseMap.put("reason", e.getMessage());
+    //    }
     return responseMap;
   }
 
-  private String sendRequest(String state, String county, Map<String, String> responseMap)
-      throws URISyntaxException, IOException, InterruptedException {
+  //  private String sendRequest(String state, String county, Map<String, String> responseMap)
+  //      throws URISyntaxException, IOException, InterruptedException {
 
-//    HttpRequest buildCensusRequest =
-//        HttpRequest.newBuilder()
-//            .uri(
-//                new URI(
-//                    "https://api.census.gov/data/2021/acs/acs1/subject/"
-//                        + "variables?get="
-//                        + "NAME,S2802_C03_022E&for=county:"
-//                        + county
-//                        + "&in=state:"
-//                        + state))
-//            .GET()
-//            .build();
+  //    HttpRequest buildCensusRequest =
+  //        HttpRequest.newBuilder()
+  //            .uri(
+  //                new URI(
+  //                    "https://api.census.gov/data/2021/acs/acs1/subject/"
+  //                        + "variables?get="
+  //                        + "NAME,S2802_C03_022E&for=county:"
+  //                        + county
+  //                        + "&in=state:"
+  //                        + state))
+  //            .GET()
+  //            .build();
 
-    // Send that API request then store the response in this variable. Note the generic type.
-//    HttpResponse<String> sentCensusResponse =
-//        HttpClient.newBuilder()
-//            .build()
-//            .send(buildCensusRequest, HttpResponse.BodyHandlers.ofString());
+  // Send that API request then store the response in this variable. Note the generic type.
+  //    HttpResponse<String> sentCensusResponse =
+  //        HttpClient.newBuilder()
+  //            .build()
+  //            .send(buildCensusRequest, HttpResponse.BodyHandlers.ofString());
 
-    sentCensusResponse.statusCode();
-    responseMap.put("Status:", String.valueOf(sentCensusResponse.statusCode()));
-
-    System.out.println(sentCensusResponse);
-    System.out.println(sentCensusResponse.body());
-
-    return sentCensusResponse.body();
-  }
+  //    sentCensusResponse.statusCode();
+  //    responseMap.put("Status:", String.valueOf(sentCensusResponse.statusCode()));
+  //
+  //    System.out.println(sentCensusResponse);
+  //    System.out.println(sentCensusResponse.body());
+  //
+  //    return sentCensusResponse.body();
+  //  }
 }

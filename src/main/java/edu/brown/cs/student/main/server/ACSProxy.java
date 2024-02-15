@@ -8,9 +8,9 @@ import java.util.Map;
 public class ACSProxy implements ACSDataSource {
   private final Map<String, String> resultMap;
   private Map<String, String> public_resultMap = null;
-  //@Override
+  // @Override
   public Map<String, String> getData() {
-    if (public_resultMap == null){
+    if (public_resultMap == null) {
       public_resultMap = Collections.unmodifiableMap(resultMap);
     }
     return public_resultMap;
