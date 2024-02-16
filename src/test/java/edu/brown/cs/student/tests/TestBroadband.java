@@ -1,21 +1,25 @@
 package edu.brown.cs.student.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 import edu.brown.cs.student.main.server.ACSDataSource;
 import edu.brown.cs.student.main.server.BroadbandHandler;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import okio.Buffer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,9 +36,9 @@ public class TestBroadband {
     Logger.getLogger("").setLevel(Level.WARNING); // empty name = root
   }
 
-  private final Type mapStringObject = Types.newParameterizedType(Map.class, String.class, String.class);
-  private JsonAdapter<Map<String, String>> adapter;
-  //private JsonAdapter<> weatherDataAdapter;
+  //private JsonAdapter<List<List<String>>> adapter;
+  private JsonAdapter<Map<String, Object>> adapter;
+  private final Type mapStringObject = Types.newParameterizedType(Map.class, String.class, Object.class);
 
   @BeforeEach
   public void setup() {
@@ -60,7 +64,9 @@ public class TestBroadband {
     // New Moshi adapter for responses (and requests, too; see a few lines below)
     //   For more on this, see the Server gearup.
     Moshi moshi = new Moshi.Builder().build();
-    adapter = moshi.adapter(mapStringObject);
+    Type listType = Types.newParameterizedType(List.class, List.class, String.class);
+    //adapter = moshi.adapter(listType);
+    this.adapter = moshi.adapter(this.mapStringObject);
   }
 
   @AfterEach
@@ -80,6 +86,29 @@ public class TestBroadband {
     clientConnection.setRequestProperty("Accept", "application/json");
     clientConnection.connect();
     return clientConnection;
+  }
+
+  @Test
+  public void testMissingCensusRequestFail() throws IOException {
+    // Setup without any parameters (oops!)
+    HttpURLConnection loadConnection = tryRequest("broadband");
+    // Get an OK response (the *connection* worked, the *API* provides an error response)
+    assertEquals(200, loadConnection.getResponseCode());
+
+    // Get the expected response: an error
+    //List<List<String>> responseBody = adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    Map<String, Object> body = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+
+    showDetailsIfError(body);
+    assertEquals(" failure", body.get("status:"));
+    loadConnection.disconnect(); // close gracefully
+  }
+
+
+  private void showDetailsIfError(Map<String, Object> body) {
+    if(body.containsKey("type") && "error".equals(body.get("type"))) {
+      System.out.println(body);
+    }
   }
 
 

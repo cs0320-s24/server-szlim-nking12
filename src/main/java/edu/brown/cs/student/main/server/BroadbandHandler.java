@@ -43,7 +43,13 @@ public class BroadbandHandler implements Route {
   @Override
   public Object handle(Request request, Response response) {
     Map<String, Object> responseMap = new HashMap<>();
-    JsonAdapter<Map<String, Object>> adapter = null;
+    Moshi moshi = new Moshi.Builder().build();
+    Type type = Types.newParameterizedType(Map.class, String.class, Object.class);
+    JsonAdapter<Map<String, Object>> adapter1 = moshi.adapter(type);
+
+    Type mapStringObject = Types.newParameterizedType(Map.class, String.class, String.class);
+    JsonAdapter<Map<String, String>> adapter = moshi.adapter(mapStringObject);
+    adapter = moshi.adapter(mapStringObject);
 
     try {
       if (this.statecodes == null) {
@@ -58,7 +64,7 @@ public class BroadbandHandler implements Route {
         responseMap.put(
             "reason", " unable to retrieve county codes for API, there may be a spelling error");
         responseMap.put("state input", state);
-        return responseMap;
+        return adapter1.toJson(responseMap);
       }
 
       String county = countycodes.get(request.queryParams("county"));
@@ -67,18 +73,13 @@ public class BroadbandHandler implements Route {
         county = "*";
       }
 
-      // Sends a request to the API and receives JSON back
-      Moshi moshi = new Moshi.Builder().build();
-      // Replies will be Maps from String to Object. This isn't ideal; see reflection...
-      Type mapStringObject = Types.newParameterizedType(Map.class, String.class, String.class);
-      adapter = moshi.adapter(mapStringObject);
 
       if (state == null) {
         responseMap.put("state_arg", state);
         responseMap.put("county_arg", county);
         responseMap.put("type", "error");
         responseMap.put("error_type", "missing parameter");
-        return adapter.toJson(responseMap);
+        return adapter1.toJson(responseMap);
       }
 
       List<List<String>> data = this.source.getData(state, county);
@@ -93,7 +94,7 @@ public class BroadbandHandler implements Route {
       System.err.println(e.getMessage());
       responseMap.put("result", "Exception");
       responseMap.put("reason", e.getMessage());
-      return adapter.toJson(responseMap);
+      return adapter1.toJson(responseMap);
     }
   }
 }
