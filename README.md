@@ -27,7 +27,7 @@ Caching: ACSCaching optimizes runtime by caching the data. This reduces the need
 - If the county is not found, it will return data for all the counties in the specified state.
 
 # Errors/Bugs
-- n/a
+- This is more a potential user error that one may encounter that I wanted to mention. If a user indicated that a CSV has headers and it actually does not, and the value they are searching for is in that first row, then the first row will not be considered when searching. However, if a user inputs anything other than yes, it will automatically assume no headers and continue to search the entire file. This is only one specific case
 
 # Tests
 
