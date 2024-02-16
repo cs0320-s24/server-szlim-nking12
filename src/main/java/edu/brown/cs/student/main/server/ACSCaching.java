@@ -42,7 +42,6 @@ public class ACSCaching implements ACSDataSource {
                       throws DatasourceException, IOException, URISyntaxException,
                           InterruptedException {
                     String[] k = key.split(",");
-                    System.out.println("called load for: " + k[0] + k[1]);
                     // If this isn't yet present in the cache, load it:
                     return source.getData(k[0], k[1]);
                   }
@@ -58,7 +57,6 @@ public class ACSCaching implements ACSDataSource {
   @Override
   public List<List<String>> getData(String statenum, String countynum) {
     String key = statenum + "," + countynum;
-    System.out.println("searching for: " + statenum + countynum);
     List<List<String>> result = null;
     try {
       result = cache.get(key);
