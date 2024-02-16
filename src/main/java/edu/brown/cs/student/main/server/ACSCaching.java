@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
  * A class that caches responses to improve performance and efficiency by avoiding excessive calls
  * to CensusAPISource
  *
- * This version uses a Guava cache class to manage the cache.
+ * <p>This version uses a Guava cache class to manage the cache.
  */
 public class ACSCaching implements ACSDataSource {
   private final LoadingCache<String, List<List<String>>> cache;

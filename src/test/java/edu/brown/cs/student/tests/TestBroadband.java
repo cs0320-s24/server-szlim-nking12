@@ -13,7 +13,10 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -103,6 +106,53 @@ public class TestBroadband {
     assertEquals(" failure", body.get("status:"));
     loadConnection.disconnect(); // close gracefully
   }
+
+  @Test
+  public void testSuccessfulDataRetrieval() {
+    List<List<String>> mockedData = new ArrayList<>();
+    mockedData.add(Arrays.asList("variable1", "value1"));
+    mockedData.add(Arrays.asList("variable2", "value2"));
+
+    Map<String, String> expected = new HashMap<>();
+    expected.put("type", "success");
+    expected.put("data retrieved at: ", String.valueOf(LocalDateTime.now()));
+    expected.put("variable1", "value1");
+    expected.put("variable2", "value2");
+
+    //nope im confused
+
+  }
+
+  @Test
+  public void testCountyCodeRetrievalFailure() {
+
+  }
+
+  @Test
+  public void testStateCodeRetrievalFailure(){
+
+  }
+
+  @Test
+  public void testCachingHit(){
+    //check that if the same data is requested again, it's retrieved from the cache rather than making a new API call.
+  }
+
+  @Test
+  public void testCachingMiss(){
+    //check that when the data is not present in the cache, and ensure that the ACSCaching class fetches data from the CensusAPISource.
+  }
+
+  @Test
+  public void testInvalidParameters(){
+
+  }
+
+  @Test
+  public void testMissingParameters(){
+
+  }
+
 
 
   private void showDetailsIfError(Map<String, Object> body) {

@@ -14,16 +14,17 @@ import java.net.http.HttpResponse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 /**
- * The LocationCodes class provides methods for retrieving state and county codes from the Census API.
+ * The LocationCodes class provides methods for retrieving state and county codes from the Census
+ * API.
  */
 public class LocationCodes {
-  /**
-   * Constructs a LocationCodes instance.
-   */
+  /** Constructs a LocationCodes instance. */
   public LocationCodes() {}
   /**
    * Retrieves a map of state codes from the Census API.
+   *
    * @return A map of state codes where the key is the state name and the value is the state code.
    */
   public Map<String, String> getStateCodes() {
@@ -59,7 +60,9 @@ public class LocationCodes {
   }
   /**
    * Retrieves a map of county codes from the Census API.
-   * @return A map of county codes where the key is the county name and the value is the county code.
+   *
+   * @return A map of county codes where the key is the county name and the value is the county
+   *     code.
    */
   public Map<String, String> getCountyCodes(String stateCode)
       throws URISyntaxException, IOException, InterruptedException {

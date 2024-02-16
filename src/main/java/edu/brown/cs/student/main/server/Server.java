@@ -3,6 +3,7 @@ package edu.brown.cs.student.main.server;
 import static spark.Spark.after;
 
 import spark.Spark;
+
 /**
  * Top-level class for this demo. Contains the main() method which starts Spark and runs the various
  * handlers.
@@ -10,9 +11,7 @@ import spark.Spark;
 public class Server {
 
   private CSVSource state;
-  /**
-   * Constructs a Server instance, initializes Spark routes, and starts the HTTP server.
-   */
+  /** Constructs a Server instance, initializes Spark routes, and starts the HTTP server. */
   public Server() {
     this.state = new CSVSource();
     int port = 3232;
@@ -32,9 +31,7 @@ public class Server {
     Spark.init();
     Spark.awaitInitialization();
   }
-  /**
-   * Main method to start the Server and print a message indicating that the server has started.
-   */
+  /** Main method to start the Server and print a message indicating that the server has started. */
   public static void main(String[] args) {
     new Server();
     System.out.println("Server started; exiting main...");
