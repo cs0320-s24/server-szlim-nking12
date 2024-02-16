@@ -9,12 +9,12 @@ import java.lang.reflect.Type;
 import java.net.URISyntaxException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -57,10 +57,6 @@ public class BroadbandHandler implements Route {
     Type type = Types.newParameterizedType(Map.class, String.class, Object.class);
     JsonAdapter<Map<String, Object>> adapter1 = moshi.adapter(type);
 
-    Type mapStringObject = Types.newParameterizedType(Map.class, String.class, String.class);
-    JsonAdapter<Map<String, String>> adapter = moshi.adapter(mapStringObject);
-    adapter = moshi.adapter(mapStringObject);
-
     try {
       if (this.statecodes == null) {
         responseMap.put("result", "error_datasource");
@@ -68,6 +64,14 @@ public class BroadbandHandler implements Route {
         return adapter1.toJson(responseMap);
       }
       String state = this.statecodes.get(request.queryParams("state"));
+
+      if (state == null) {
+        responseMap.put("state_arg", request.queryParams("state"));
+        responseMap.put("county_arg", request.queryParams("county"));
+        responseMap.put("result", "error_bad_request");
+        responseMap.put("error_type", "missing parameter");
+        return adapter1.toJson(responseMap);
+      }
       Map<String, String> countycodes = this.codeHandler.getCountyCodes(state);
       if (countycodes == null) {
         responseMap.put("result", "error_bad_request");
@@ -84,14 +88,6 @@ public class BroadbandHandler implements Route {
         county = "*";
       }
 
-      if (state == null) {
-        responseMap.put("state_arg", request.queryParams("state"));
-        responseMap.put("county_arg", request.queryParams("county"));
-        responseMap.put("result", "error_bad_request");
-        responseMap.put("error_type", "missing parameter");
-        return adapter1.toJson(responseMap);
-      }
-
       List<List<String>> data = this.source.getData(state, county);
       responseMap.put("result", "success");
       responseMap.put("data retrieved at: ", strDate);
@@ -100,8 +96,14 @@ public class BroadbandHandler implements Route {
       }
       return adapter1.toJson(responseMap);
 
-    } catch (DatasourceException | IOException | InterruptedException | URISyntaxException | JsonDataException e) {
-      System.err.println(e.getMessage());
+    } catch (DatasourceException
+        | IOException
+        | InterruptedException
+        | URISyntaxException
+        | JsonDataException
+        | ExecutionException e) {
+      responseMap.put("state_arg", request.queryParams("state"));
+      responseMap.put("county_arg", request.queryParams("county"));
       responseMap.put("result", "error_bad_json");
       responseMap.put("reason", e.getMessage());
       return adapter1.toJson(responseMap);

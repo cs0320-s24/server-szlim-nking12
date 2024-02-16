@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -43,7 +42,6 @@ public class TestBroadband {
 
   @BeforeEach
   public void setup() {
-    // Re-initialize parser, state, etc. for every test method
 
     // Use *MOCKED* data when in this test environment.
     // Notice that the WeatherHandler code doesn't need to care whether it has
@@ -98,26 +96,14 @@ public class TestBroadband {
         this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
 
     showDetailsIfError(body);
-    assertEquals("error_bad_request", body.get("result"));
+    assertEquals("error_bad_json", body.get("result"));
     loadConnection.disconnect(); // close gracefully
   }
 
   @Test
   public void testSuccessfulDataRetrieval() throws IOException {
-    HttpURLConnection loadConnection = tryRequest("broadband?state=California&county=Los%20Angeles%20County,%20California");
-    assertEquals(200, loadConnection.getResponseCode());
-
-    Map<String, Object> body =
-              this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
-
-    Assert.assertEquals(body.get("89.9"), "Los Angeles County, California");
-    assertEquals("success", body.get("result"));
-    loadConnection.disconnect();
-  }
-
-  @Test
-  public void testCountyCodeRetrievalFailure() throws IOException {
-    HttpURLConnection loadConnection = tryRequest("broadband?state=California&county=Los%20Anles%20County,%20California");
+    HttpURLConnection loadConnection =
+        tryRequest("broadband?state=California&county=Los%20Angeles%20County,%20California");
     assertEquals(200, loadConnection.getResponseCode());
 
     Map<String, Object> body =
@@ -126,13 +112,31 @@ public class TestBroadband {
     Assert.assertEquals(body.get("89.9"), "Los Angeles County, California");
     assertEquals("success", body.get("result"));
     loadConnection.disconnect();
+  }
 
+  /**
+   * If an invalid county code is inputted, the Server will respond with all counties in the state
+   *
+   * @throws IOException
+   */
+  @Test
+  public void testCountyCodeRetrievalFailure() throws IOException {
+    HttpURLConnection loadConnection =
+        tryRequest("broadband?state=California&county=Los%20Anles%20County,%20California");
+    assertEquals(200, loadConnection.getResponseCode());
 
+    Map<String, Object> body =
+        this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+
+    Assert.assertEquals(body.get("89.9"), "Los Angeles County, California");
+    assertEquals("success", body.get("result"));
+    loadConnection.disconnect();
   }
 
   @Test
   public void testStateCodeRetrievalFailure() throws IOException {
-    HttpURLConnection loadConnection = tryRequest("broadband?state=Cafornia&county=Los%20Angeles%20County,%20California");
+    HttpURLConnection loadConnection =
+        tryRequest("broadband?state=Cafornia&county=Los%20Angeles%20County,%20California");
     assertEquals(200, loadConnection.getResponseCode());
 
     Map<String, Object> body =
@@ -141,14 +145,23 @@ public class TestBroadband {
     Assert.assertEquals(body.get("result"), "error_bad_request");
     Assert.assertEquals(body.get("state_arg"), "Cafornia");
     loadConnection.disconnect();
-
   }
 
   @Test
-  public void testInvalidParameters() {}
+  public void testInvalidParameters() throws IOException {
+    HttpURLConnection loadConnection =
+        tryRequest("broadband?state=Cafornia&county=Los%20Angeles%20County,%20California");
+    assertEquals(200, loadConnection.getResponseCode());
 
-  @Test
-  public void testMissingParameters() {}
+    Map<String, Object> body =
+        this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+
+    Assert.assertEquals(body.get("result"), "error_bad_request");
+    Assert.assertEquals(body.get("state_arg"), "Cafornia");
+    loadConnection.disconnect();
+  }
+
+
 
   private void showDetailsIfError(Map<String, Object> body) {
     if (body.containsKey("type") && "error".equals(body.get("type"))) {
