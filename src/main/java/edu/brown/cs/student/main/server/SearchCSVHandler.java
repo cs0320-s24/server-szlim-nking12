@@ -47,25 +47,37 @@ public class SearchCSVHandler implements Route {
     Type type = Types.newParameterizedType(Map.class, String.class, Object.class);
     JsonAdapter<Map<String, Object>> adapter1 = moshi.adapter(type);
     Map<String, Object> responseMap = new HashMap<>();
-    if (state.getData() != null) {
-      List<List<String>> searchResults = this.searchCSV(request);
-      if (searchResults.isEmpty()) {
-        responseMap.put("result", "no matches found");
+    try {
+      if (state.getData() != null) {
+        List<List<String>> searchResults = this.searchCSV(request);
+        if (searchResults == null){
+          responseMap.put("result", "no matches found");
+          return adapter1.toJson(responseMap);
+        }
+        if (searchResults.isEmpty()) {
+          responseMap.put("result", "no matches found");
+          return adapter1.toJson(responseMap);
+        }
+        for (int i = searchResults.size() - 1; i >= 0; i--) {
+          responseMap.put("Row " + i, searchResults.get(i));
+        }
+        responseMap.put("result", "success");
         return adapter1.toJson(responseMap);
       }
-      for (int i = searchResults.size() - 1; i >= 0; i--) {
-        responseMap.put("Row " + i, searchResults.get(i));
-      }
-      responseMap.put("result", "success");
+      responseMap.put("result", "error");
+      responseMap.put(
+          "error",
+          "CSV has not been loaded."
+              + "Please use the load endpoint before attempting to view a CSV.");
       return adapter1.toJson(responseMap);
+    } catch (IOException | FactoryFailureException | NullPointerException e) {
+      responseMap.put("result", "error");
+      responseMap.put(
+          "error",
+          "CSV has not been loaded."
+              + "Please use the load endpoint before attempting to view a CSV.");
+      return responseMap;
     }
-
-    responseMap.put("result", "error");
-    responseMap.put(
-        "error",
-        "CSV has not been loaded."
-            + "Please use the load endpoint before attempting to view a CSV.");
-    return adapter1.toJson(responseMap);
   }
 
   /**

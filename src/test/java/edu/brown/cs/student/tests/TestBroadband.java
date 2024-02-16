@@ -96,7 +96,7 @@ public class TestBroadband {
         this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
 
     showDetailsIfError(body);
-    assertEquals("error_bad_json", body.get("result"));
+    assertEquals("error_bad_request", body.get("result"));
     loadConnection.disconnect(); // close gracefully
   }
 

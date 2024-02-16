@@ -192,10 +192,11 @@ public class TestCSV {
   }
 
   @Test
-  public void testSearchNotLoaded() throws IOException {    HttpURLConnection loadConnection =
-      tryRequest(
-          "loadcsv",
-          "/Users/sophialim/Desktop/cs32/server-szlim-nking12/data/census/dol_ri_earnings_disparity.csv");
+  public void testSearchNotLoaded() throws IOException {
+    HttpURLConnection loadConnection =
+        tryRequest(
+            "loadcsv",
+            "/Users/sophialim/Desktop/cs32/server-szlim-nking12/data/census/dol_ri_earnings_disparity.csv");
     assertEquals(200, loadConnection.getResponseCode());
 
     HttpURLConnection searchConnection = trySearchRequest("searchcsv", "White", "1");
@@ -206,7 +207,8 @@ public class TestCSV {
 
     assertEquals("success", body.get("result"));
     assertEquals(
-        "[RI, White, \" $1,058.47 \", 395773.6521,  $1.00 , 75%]", body.get("Row 0").toString());}
+        "[RI, White, \" $1,058.47 \", 395773.6521,  $1.00 , 75%]", body.get("Row 0").toString());
+  }
 
   @Test
   public void testSearchSuccessOneResult() throws IOException {
