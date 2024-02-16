@@ -50,7 +50,7 @@ public class SearchCSVHandler implements Route {
     try {
       if (state.getData() != null) {
         List<List<String>> searchResults = this.searchCSV(request);
-        if (searchResults == null){
+        if (searchResults == null) {
           responseMap.put("result", "no matches found");
           return adapter1.toJson(responseMap);
         }
