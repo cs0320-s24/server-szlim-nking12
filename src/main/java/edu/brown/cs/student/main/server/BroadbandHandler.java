@@ -1,12 +1,17 @@
 package edu.brown.cs.student.main.server;
 
 import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.JsonDataException;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URISyntaxException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +47,11 @@ public class BroadbandHandler implements Route {
    */
   @Override
   public Object handle(Request request, Response response) {
+
+    Date retrieved = Calendar.getInstance().getTime();
+    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+    String strDate = dateFormat.format(retrieved);
+
     Map<String, Object> responseMap = new HashMap<>();
     Moshi moshi = new Moshi.Builder().build();
     Type type = Types.newParameterizedType(Map.class, String.class, Object.class);
@@ -53,17 +63,18 @@ public class BroadbandHandler implements Route {
 
     try {
       if (this.statecodes == null) {
-        responseMap.put("status:", " failure");
-        responseMap.put("reason", " unable to retrieve state codes from API");
-        return responseMap;
+        responseMap.put("result", "error_datasource");
+        responseMap.put("reason", "unable to retrieve state codes from API");
+        return adapter1.toJson(responseMap);
       }
       String state = this.statecodes.get(request.queryParams("state"));
       Map<String, String> countycodes = this.codeHandler.getCountyCodes(state);
       if (countycodes == null) {
-        responseMap.put("status:", " failure");
+        responseMap.put("result", "error_bad_request");
         responseMap.put(
-            "reason", " unable to retrieve county codes for API, there may be a spelling error");
-        responseMap.put("state input", state);
+            "reason", "unable to retrieve county codes for API, there may be a spelling error");
+        responseMap.put("state_arg", request.queryParams("state"));
+        responseMap.put("county_arg", request.queryParams("county"));
         return adapter1.toJson(responseMap);
       }
 
@@ -74,24 +85,24 @@ public class BroadbandHandler implements Route {
       }
 
       if (state == null) {
-        responseMap.put("state_arg", state);
-        responseMap.put("county_arg", county);
-        responseMap.put("type", "error");
+        responseMap.put("state_arg", request.queryParams("state"));
+        responseMap.put("county_arg", request.queryParams("county"));
+        responseMap.put("result", "error_bad_request");
         responseMap.put("error_type", "missing parameter");
         return adapter1.toJson(responseMap);
       }
 
       List<List<String>> data = this.source.getData(state, county);
-      responseMap.put("type", "success");
-      responseMap.put("data retrieved at: ", LocalDateTime.now());
+      responseMap.put("result", "success");
+      responseMap.put("data retrieved at: ", strDate);
       for (List<String> list : data) {
         responseMap.put(list.get(0), list.get(1));
       }
-      return responseMap;
+      return adapter1.toJson(responseMap);
 
-    } catch (DatasourceException | IOException | InterruptedException | URISyntaxException e) {
+    } catch (DatasourceException | IOException | InterruptedException | URISyntaxException | JsonDataException e) {
       System.err.println(e.getMessage());
-      responseMap.put("result", "Exception");
+      responseMap.put("result", "error_bad_json");
       responseMap.put("reason", e.getMessage());
       return adapter1.toJson(responseMap);
     }

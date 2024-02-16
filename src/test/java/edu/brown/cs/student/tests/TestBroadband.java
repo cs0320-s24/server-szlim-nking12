@@ -65,8 +65,6 @@ public class TestBroadband {
     // New Moshi adapter for responses (and requests, too; see a few lines below)
     //   For more on this, see the Server gearup.
     Moshi moshi = new Moshi.Builder().build();
-    Type listType = Types.newParameterizedType(List.class, List.class, String.class);
-    // adapter = moshi.adapter(listType);
     this.adapter = moshi.adapter(this.mapStringObject);
   }
 
@@ -96,61 +94,54 @@ public class TestBroadband {
     // Get an OK response (the *connection* worked, the *API* provides an error response)
     assertEquals(200, loadConnection.getResponseCode());
 
-    // Get the expected response: an error
-    // List<List<String>> responseBody = adapter.fromJson(new
-    // Buffer().readFrom(loadConnection.getInputStream()));
     Map<String, Object> body =
         this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
 
     showDetailsIfError(body);
-    assertEquals(" failure", body.get("status:"));
+    assertEquals("error_bad_request", body.get("result"));
     loadConnection.disconnect(); // close gracefully
   }
 
   @Test
   public void testSuccessfulDataRetrieval() throws IOException {
-    HttpURLConnection loadConnection =
-        tryRequest("broadband?state=California&county=Los%20Angeles%20County,%20California");
+    HttpURLConnection loadConnection = tryRequest("broadband?state=California&county=Los%20Angeles%20County,%20California");
     assertEquals(200, loadConnection.getResponseCode());
 
-    String responseBody = new Buffer().readFrom(loadConnection.getInputStream()).readUtf8();
-//    System.out.println("Response Body: " + responseBody);
+    Map<String, Object> body =
+              this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
 
-    //Map<String, Object> body = this.adapter.fromJson(responseBody);
+    Assert.assertEquals(body.get("89.9"), "Los Angeles County, California");
+    assertEquals("success", body.get("result"));
+    loadConnection.disconnect();
+  }
 
-//          Map<String, Object> body =
-//              this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+  @Test
+  public void testCountyCodeRetrievalFailure() throws IOException {
+    HttpURLConnection loadConnection = tryRequest("broadband?state=California&county=Los%20Anles%20County,%20California");
+    assertEquals(200, loadConnection.getResponseCode());
 
-    Assert.assertTrue(responseBody.contains("89.9=Los Angeles County, California"));
+    Map<String, Object> body =
+        this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
 
-//    Map<String, Object> body = this.adapter.fromJson(responseBody); //IT ERRORS HERE
-//    System.out.println("body" + body);
-//    showDetailsIfError(body);
-//    assertEquals(" failure", body.get("status:"));
+    Assert.assertEquals(body.get("89.9"), "Los Angeles County, California");
+    assertEquals("success", body.get("result"));
+    loadConnection.disconnect();
 
-
-          loadConnection.disconnect();
-
-    // nope im confused
 
   }
 
   @Test
-  public void testCountyCodeRetrievalFailure() {}
+  public void testStateCodeRetrievalFailure() throws IOException {
+    HttpURLConnection loadConnection = tryRequest("broadband?state=Cafornia&county=Los%20Angeles%20County,%20California");
+    assertEquals(200, loadConnection.getResponseCode());
 
-  @Test
-  public void testStateCodeRetrievalFailure() {}
+    Map<String, Object> body =
+        this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
 
-  @Test
-  public void testCachingHit() {
-    // check that if the same data is requested again, it's retrieved from the cache rather than
-    // making a new API call.
-  }
+    Assert.assertEquals(body.get("result"), "error_bad_request");
+    Assert.assertEquals(body.get("state_arg"), "Cafornia");
+    loadConnection.disconnect();
 
-  @Test
-  public void testCachingMiss() {
-    // check that when the data is not present in the cache, and ensure that the ACSCaching class
-    // fetches data from the CensusAPISource.
   }
 
   @Test
