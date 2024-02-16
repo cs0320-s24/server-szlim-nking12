@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -77,11 +76,31 @@ public class TestCSV {
     return clientConnection;
   }
 
+  private static HttpURLConnection trySearchRequest(String apiCall, String target, String col)
+      throws IOException {
+    // Configure the connection (but don't actually send the request yet)
+    URL requestURL =
+        new URL(
+            "http://localhost:"
+                + Spark.port()
+                + "/"
+                + apiCall
+                + "?target="
+                + target
+                + "&col="
+                + col);
+    HttpURLConnection clientConnection = (HttpURLConnection) requestURL.openConnection();
+    clientConnection.connect();
+    return clientConnection;
+  }
+
   @Test
   public void testLoadHandlerCorrect() throws IOException {
-    //tests on RI_Data csv file with correct inputs
-    HttpURLConnection loadConnection = tryRequest("loadcsv",
-        "/Users/natalie/Desktop/CS32/projects/server-szlim-nking12/data/census/dol_ri_earnings_disparity.csv");
+    // tests on RI_Data csv file with correct inputs
+    HttpURLConnection loadConnection =
+        tryRequest(
+            "loadcsv",
+            "/Users/natalie/Desktop/CS32/projects/server-szlim-nking12/data/census/dol_ri_earnings_disparity.csv");
     assertEquals(200, loadConnection.getResponseCode());
 
     Map<String, Object> body =
@@ -92,9 +111,8 @@ public class TestCSV {
 
   @Test
   public void testLoadHandlerProtectedFile() throws IOException {
-    //tests on RI_Data csv file with correct inputs
-    HttpURLConnection loadConnection = tryRequest("loadcsv",
-        "/stardata");
+    // tests on RI_Data csv file with correct inputs
+    HttpURLConnection loadConnection = tryRequest("loadcsv", "/stardata");
     assertEquals(200, loadConnection.getResponseCode());
 
     Map<String, Object> body =
@@ -105,9 +123,11 @@ public class TestCSV {
 
   @Test
   public void testLoadHandlerNonexistent() throws IOException {
-    //tests on RI_Data csv file with correct inputs
-    HttpURLConnection loadConnection = tryRequest("loadcsv",
-        "/Users/natalie/Desktop/CS32/projects/server-szlim-nking12/data/census/dol_ri_earnings_dispty.csv");
+    // tests on RI_Data csv file with correct inputs
+    HttpURLConnection loadConnection =
+        tryRequest(
+            "loadcsv",
+            "/Users/natalie/Desktop/CS32/projects/server-szlim-nking12/data/census/dol_ri_earnings_dispty.csv");
     assertEquals(200, loadConnection.getResponseCode());
 
     Map<String, Object> body =
@@ -117,22 +137,96 @@ public class TestCSV {
   }
 
   @Test
-  public void testViewNotLoaded(){}
+  public void testViewNotLoaded() throws IOException {
+    // tests on RI_Data csv file without loading
+
+    HttpURLConnection viewConnection =
+        tryRequest(
+            "viewcsv",
+            "/Users/sophialim/Desktop/cs32/server-szlim-nking12/data/census/dol_ri_earnings_disparity.csv");
+    assertEquals(200, viewConnection.getResponseCode());
+
+    Map<String, Object> body =
+        this.adapter.fromJson(new Buffer().readFrom(viewConnection.getInputStream()));
+
+    assertEquals(
+        "CSV has not been loaded. you must load a CSV before you can view it.", body.get("error"));
+  }
 
   @Test
-  public void testViewSuccess(){}
+  public void testViewSuccess() throws IOException {
+    // successful view
+    HttpURLConnection loadConnection =
+        tryRequest(
+            "loadcsv",
+            "/Users/sophialim/Desktop/cs32/server-szlim-nking12/data/census/dol_ri_earnings_disparity.csv");
+    assertEquals(200, loadConnection.getResponseCode());
+
+    HttpURLConnection viewConnection =
+        tryRequest(
+            "viewcsv",
+            "/Users/sophialim/Desktop/cs32/server-szlim-nking12/data/census/dol_ri_earnings_disparity.csv");
+    assertEquals(200, loadConnection.getResponseCode());
+
+    Map<String, Object> body =
+        this.adapter.fromJson(new Buffer().readFrom(viewConnection.getInputStream()));
+
+    assertEquals("success", body.get("result"));
+  }
 
   @Test
-  public void testSearchNoResults(){}
+  public void testSearchNoResults() throws IOException {
+    HttpURLConnection loadConnection =
+        tryRequest(
+            "loadcsv",
+            "/Users/sophialim/Desktop/cs32/server-szlim-nking12/data/census/dol_ri_earnings_disparity.csv");
+    assertEquals(200, loadConnection.getResponseCode());
+
+    HttpURLConnection searchConnection = trySearchRequest("searchcsv", "xyz", "1");
+    assertEquals(200, loadConnection.getResponseCode());
+
+    Map<String, Object> body =
+        this.adapter.fromJson(new Buffer().readFrom(searchConnection.getInputStream()));
+
+    assertEquals("no matches found", body.get("result"));
+  }
 
   @Test
-  public void testSearchNotLoaded(){}
+  public void testSearchNotLoaded() throws IOException {    HttpURLConnection loadConnection =
+      tryRequest(
+          "loadcsv",
+          "/Users/sophialim/Desktop/cs32/server-szlim-nking12/data/census/dol_ri_earnings_disparity.csv");
+    assertEquals(200, loadConnection.getResponseCode());
+
+    HttpURLConnection searchConnection = trySearchRequest("searchcsv", "White", "1");
+    assertEquals(200, loadConnection.getResponseCode());
+
+    Map<String, Object> body =
+        this.adapter.fromJson(new Buffer().readFrom(searchConnection.getInputStream()));
+
+    assertEquals("success", body.get("result"));
+    assertEquals(
+        "[RI, White, \" $1,058.47 \", 395773.6521,  $1.00 , 75%]", body.get("Row 0").toString());}
 
   @Test
-  public void testSearchSuccessOneResult(){}
+  public void testSearchSuccessOneResult() throws IOException {
+    HttpURLConnection loadConnection =
+        tryRequest(
+            "loadcsv",
+            "/Users/sophialim/Desktop/cs32/server-szlim-nking12/data/census/dol_ri_earnings_disparity.csv");
+    assertEquals(200, loadConnection.getResponseCode());
+
+    HttpURLConnection searchConnection = trySearchRequest("searchcsv", "White", "1");
+    assertEquals(200, loadConnection.getResponseCode());
+
+    Map<String, Object> body =
+        this.adapter.fromJson(new Buffer().readFrom(searchConnection.getInputStream()));
+
+    assertEquals("success", body.get("result"));
+    assertEquals(
+        "[RI, White, \" $1,058.47 \", 395773.6521,  $1.00 , 75%]", body.get("Row 0").toString());
+  }
 
   @Test
-  public void testSearchMultipleResults(){}
-
-
+  public void testSearchMultipleResults() {}
 }

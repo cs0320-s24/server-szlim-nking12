@@ -21,11 +21,8 @@ import java.util.Map;
  */
 public class LocationCodes {
 
-  /**
-   * Constructs a LocationCodes instance.
-   */
-  public LocationCodes() {
-  }
+  /** Constructs a LocationCodes instance. */
+  public LocationCodes() {}
 
   /**
    * Retrieves a map of state codes from the Census API.
@@ -67,7 +64,7 @@ public class LocationCodes {
    * Retrieves a map of county codes from the Census API.
    *
    * @return A map of county codes where the key is the county name and the value is the county
-   * code.
+   *     code.
    */
   public Map<String, String> getCountyCodes(String stateCode)
       throws URISyntaxException, IOException, InterruptedException {

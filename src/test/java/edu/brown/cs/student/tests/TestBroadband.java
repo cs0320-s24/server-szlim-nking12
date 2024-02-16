@@ -161,8 +161,6 @@ public class TestBroadband {
     loadConnection.disconnect();
   }
 
-
-
   private void showDetailsIfError(Map<String, Object> body) {
     if (body.containsKey("type") && "error".equals(body.get("type"))) {
       System.out.println(body);

@@ -30,7 +30,7 @@ public class ViewCSVHandler implements Route {
   /**
    * Handles an HTTP GET request for viewing the CSV dataset.
    *
-   * @param request  The HTTP request object.
+   * @param request The HTTP request object.
    * @param response The HTTP response object.
    * @return A serialized response, either success or failure, in JSON format.
    */
@@ -47,7 +47,8 @@ public class ViewCSVHandler implements Route {
       responseMap.put("result", "success");
       return adapter1.toJson(responseMap);
     }
-    responseMap.put("error", "CSV has not been loaded. you must load a CSV before you can view it.");
+    responseMap.put(
+        "error", "CSV has not been loaded. you must load a CSV before you can view it.");
     return adapter1.toJson(responseMap);
   }
 }

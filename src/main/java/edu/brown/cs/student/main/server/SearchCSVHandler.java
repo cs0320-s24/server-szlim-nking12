@@ -34,10 +34,10 @@ public class SearchCSVHandler implements Route {
   /**
    * Handles an HTTP GET request for searching the CSV dataset based on query parameters.
    *
-   * @param request  The HTTP request object.
+   * @param request The HTTP request object.
    * @param response The HTTP response object.
    * @return A serialized response, either success or failure, in JSON format.
-   * @throws IOException             Thrown if an error occurs during request handling.
+   * @throws IOException Thrown if an error occurs during request handling.
    * @throws FactoryFailureException if an error occurs during CSV parsing
    */
   @Override
@@ -47,17 +47,24 @@ public class SearchCSVHandler implements Route {
     Type type = Types.newParameterizedType(Map.class, String.class, Object.class);
     JsonAdapter<Map<String, Object>> adapter1 = moshi.adapter(type);
     Map<String, Object> responseMap = new HashMap<>();
-    if (state != null) {
+    if (state.getData() != null) {
       List<List<String>> searchResults = this.searchCSV(request);
+      if (searchResults.isEmpty()) {
+        responseMap.put("result", "no matches found");
+        return adapter1.toJson(responseMap);
+      }
       for (int i = searchResults.size() - 1; i >= 0; i--) {
         responseMap.put("Row " + i, searchResults.get(i));
       }
       responseMap.put("result", "success");
       return adapter1.toJson(responseMap);
     }
+
     responseMap.put("result", "error");
-    responseMap.put("error", "CSV has not been loaded."
-        + "Please use the load endpoint before attempting to view a CSV.");
+    responseMap.put(
+        "error",
+        "CSV has not been loaded."
+            + "Please use the load endpoint before attempting to view a CSV.");
     return adapter1.toJson(responseMap);
   }
 
@@ -66,7 +73,7 @@ public class SearchCSVHandler implements Route {
    *
    * @param request The HTTP request object containing search parameters.
    * @return A list of search results as rows.
-   * @throws IOException             Thrown if an I/O error occurs during search.
+   * @throws IOException Thrown if an I/O error occurs during search.
    * @throws FactoryFailureException Thrown if there is a failure during search.
    */
   public List<List<String>> searchCSV(Request request) throws IOException, FactoryFailureException {

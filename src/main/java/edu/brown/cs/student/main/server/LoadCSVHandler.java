@@ -47,32 +47,35 @@ public class LoadCSVHandler implements Route {
     Type type = Types.newParameterizedType(Map.class, String.class, Object.class);
     JsonAdapter<Map<String, Object>> adapter1 = moshi.adapter(type);
     Map<String, Object> responseMap = new HashMap<>();
-    try{
-    String csv = request.queryParams("csv");
-    String headers = request.queryParams("headers");
+    try {
+      String csv = request.queryParams("csv");
+      String headers = request.queryParams("headers");
 
-    // directory protection
-    if (!csv.contains("data/")) {
-      responseMap.put("result", "error");
-      responseMap.put("message", "File is outside protected directory. CSV files must be within the data/ directory.");
-      responseMap.put("CSV entered", csv);
+      // directory protection
+      if (!csv.contains("data/")) {
+        responseMap.put("result", "error");
+        responseMap.put(
+            "message",
+            "File is outside protected directory. CSV files must be within the data/ directory.");
+        responseMap.put("CSV entered", csv);
+        return adapter1.toJson(responseMap);
+      }
+
+      boolean hasHeaders;
+      if (headers == null) {
+        hasHeaders = false;
+      } else {
+        hasHeaders = headers.equalsIgnoreCase("true");
+      }
+      this.state.cleanData(csv, hasHeaders);
+      responseMap.put("result", "success");
+      responseMap.put("message", "CSV file successfully loaded.");
       return adapter1.toJson(responseMap);
-    }
-
-    boolean hasHeaders;
-    if (headers == null) {
-      hasHeaders = false;
-    } else {
-      hasHeaders = headers.equalsIgnoreCase("true");
-    }
-    this.state.cleanData(csv, hasHeaders);
-    responseMap.put("result", "success");
-    responseMap.put("message", "CSV file successfully loaded.");
-    return adapter1.toJson(responseMap);
-  } catch (IllegalArgumentException | IOException | FactoryFailureException e){
+    } catch (IllegalArgumentException | IOException | FactoryFailureException e) {
       responseMap.put("result", "error");
       responseMap.put("error", e.getMessage());
       responseMap.put("csv entered", request.queryParams("csv"));
       return adapter1.toJson(responseMap);
     }
-}}
+  }
+}
