@@ -73,7 +73,6 @@ public class BroadbandHandler implements Route {
         county = "*";
       }
 
-
       if (state == null) {
         responseMap.put("state_arg", state);
         responseMap.put("county_arg", county);

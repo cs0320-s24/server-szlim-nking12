@@ -7,16 +7,12 @@ import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 import edu.brown.cs.student.main.server.ACSDataSource;
 import edu.brown.cs.student.main.server.BroadbandHandler;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +23,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.testng.Assert;
 import spark.Spark;
 
 public class TestBroadband {
@@ -39,9 +36,10 @@ public class TestBroadband {
     Logger.getLogger("").setLevel(Level.WARNING); // empty name = root
   }
 
-  //private JsonAdapter<List<List<String>>> adapter;
+  // private JsonAdapter<List<List<String>>> adapter;
   private JsonAdapter<Map<String, Object>> adapter;
-  private final Type mapStringObject = Types.newParameterizedType(Map.class, String.class, Object.class);
+  private final Type mapStringObject =
+      Types.newParameterizedType(Map.class, String.class, Object.class);
 
   @BeforeEach
   public void setup() {
@@ -68,7 +66,7 @@ public class TestBroadband {
     //   For more on this, see the Server gearup.
     Moshi moshi = new Moshi.Builder().build();
     Type listType = Types.newParameterizedType(List.class, List.class, String.class);
-    //adapter = moshi.adapter(listType);
+    // adapter = moshi.adapter(listType);
     this.adapter = moshi.adapter(this.mapStringObject);
   }
 
@@ -99,8 +97,10 @@ public class TestBroadband {
     assertEquals(200, loadConnection.getResponseCode());
 
     // Get the expected response: an error
-    //List<List<String>> responseBody = adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
-    Map<String, Object> body = this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
+    // List<List<String>> responseBody = adapter.fromJson(new
+    // Buffer().readFrom(loadConnection.getInputStream()));
+    Map<String, Object> body =
+        this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
 
     showDetailsIfError(body);
     assertEquals(" failure", body.get("status:"));
@@ -108,58 +108,60 @@ public class TestBroadband {
   }
 
   @Test
-  public void testSuccessfulDataRetrieval() {
-    List<List<String>> mockedData = new ArrayList<>();
-    mockedData.add(Arrays.asList("variable1", "value1"));
-    mockedData.add(Arrays.asList("variable2", "value2"));
+  public void testSuccessfulDataRetrieval() throws IOException {
+    HttpURLConnection loadConnection =
+        tryRequest("broadband?state=California&county=Los%20Angeles%20County,%20California");
+    assertEquals(200, loadConnection.getResponseCode());
 
-    Map<String, String> expected = new HashMap<>();
-    expected.put("type", "success");
-    expected.put("data retrieved at: ", String.valueOf(LocalDateTime.now()));
-    expected.put("variable1", "value1");
-    expected.put("variable2", "value2");
+    String responseBody = new Buffer().readFrom(loadConnection.getInputStream()).readUtf8();
+//    System.out.println("Response Body: " + responseBody);
 
-    //nope im confused
+    //Map<String, Object> body = this.adapter.fromJson(responseBody);
 
-  }
+//          Map<String, Object> body =
+//              this.adapter.fromJson(new Buffer().readFrom(loadConnection.getInputStream()));
 
-  @Test
-  public void testCountyCodeRetrievalFailure() {
+    Assert.assertTrue(responseBody.contains("89.9=Los Angeles County, California"));
 
-  }
+//    Map<String, Object> body = this.adapter.fromJson(responseBody); //IT ERRORS HERE
+//    System.out.println("body" + body);
+//    showDetailsIfError(body);
+//    assertEquals(" failure", body.get("status:"));
 
-  @Test
-  public void testStateCodeRetrievalFailure(){
 
-  }
+          loadConnection.disconnect();
 
-  @Test
-  public void testCachingHit(){
-    //check that if the same data is requested again, it's retrieved from the cache rather than making a new API call.
-  }
-
-  @Test
-  public void testCachingMiss(){
-    //check that when the data is not present in the cache, and ensure that the ACSCaching class fetches data from the CensusAPISource.
-  }
-
-  @Test
-  public void testInvalidParameters(){
+    // nope im confused
 
   }
 
   @Test
-  public void testMissingParameters(){
+  public void testCountyCodeRetrievalFailure() {}
 
+  @Test
+  public void testStateCodeRetrievalFailure() {}
+
+  @Test
+  public void testCachingHit() {
+    // check that if the same data is requested again, it's retrieved from the cache rather than
+    // making a new API call.
   }
 
+  @Test
+  public void testCachingMiss() {
+    // check that when the data is not present in the cache, and ensure that the ACSCaching class
+    // fetches data from the CensusAPISource.
+  }
 
+  @Test
+  public void testInvalidParameters() {}
+
+  @Test
+  public void testMissingParameters() {}
 
   private void showDetailsIfError(Map<String, Object> body) {
-    if(body.containsKey("type") && "error".equals(body.get("type"))) {
+    if (body.containsKey("type") && "error".equals(body.get("type"))) {
       System.out.println(body);
     }
   }
-
-
 }
