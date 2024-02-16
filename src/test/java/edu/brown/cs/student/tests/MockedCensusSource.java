@@ -1,6 +1,6 @@
 package edu.brown.cs.student.tests;
 
-import edu.brown.cs.student.main.server.ACSDataSource;
+import edu.brown.cs.student.main.server.sources.ACSDataSource;
 import java.util.List;
 
 public class MockedCensusSource implements ACSDataSource {

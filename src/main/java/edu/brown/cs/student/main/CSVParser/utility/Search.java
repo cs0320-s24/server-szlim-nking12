@@ -25,7 +25,6 @@ public class Search {
    */
   public Search(List<List<String>> parsed, List<String> headerRow)
       throws IOException, FactoryFailureException {
-    //    this.csvParser = csvParser;
     this.parsed = parsed;
     this.finalRows = new ArrayList<>();
     this.headerRow = headerRow;
@@ -96,7 +95,6 @@ public class Search {
       }
     } else {
       // It's a string, so use as a column name
-      //      List<String> firstRow = this.parsed.get(0);
       colIndex = headerRow.indexOf(col.toLowerCase());
 
       // column name not found

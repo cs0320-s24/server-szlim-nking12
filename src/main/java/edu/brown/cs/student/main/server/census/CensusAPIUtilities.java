@@ -1,4 +1,4 @@
-package edu.brown.cs.student.main.server;
+package edu.brown.cs.student.main.server.census;
 
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.JsonDataException;
@@ -24,7 +24,6 @@ public class CensusAPIUtilities {
    * @throws JsonDataException Thrown if the JSON data is not in the expected format.
    */
   public static List<List<String>> deserializeCensusData(String jsonList) throws IOException {
-    // List<CensusAPISource> censusDataList = new ArrayList<>();
     Moshi moshi = new Moshi.Builder().build();
     Type listType = Types.newParameterizedType(List.class, List.class, String.class);
     JsonAdapter<List<List<String>>> adapter = moshi.adapter(listType);

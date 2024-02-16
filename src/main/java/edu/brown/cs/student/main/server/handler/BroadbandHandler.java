@@ -1,9 +1,12 @@
-package edu.brown.cs.student.main.server;
+package edu.brown.cs.student.main.server.handler;
 
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.JsonDataException;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
+import edu.brown.cs.student.main.server.census.LocationCodes;
+import edu.brown.cs.student.main.server.sources.ACSDataSource;
+import edu.brown.cs.student.main.server.sources.DatasourceException;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URISyntaxException;
@@ -97,11 +100,11 @@ public class BroadbandHandler implements Route {
       return adapter1.toJson(responseMap);
 
     } catch (DatasourceException
-        | IOException
-        | InterruptedException
-        | URISyntaxException
-        | JsonDataException
-        | ExecutionException e) {
+             | IOException
+             | InterruptedException
+             | URISyntaxException
+             | JsonDataException
+             | ExecutionException e) {
       responseMap.put("state_arg", request.queryParams("state"));
       responseMap.put("county_arg", request.queryParams("county"));
       responseMap.put("result", "error_bad_json");
