@@ -25,24 +25,12 @@ public class CensusAPIUtilities {
    */
   public static List<List<String>> deserializeCensusData(String jsonList) throws IOException {
     // List<CensusAPISource> censusDataList = new ArrayList<>();
-    try {
-      Moshi moshi = new Moshi.Builder().build();
-      Type listType = Types.newParameterizedType(List.class, List.class, String.class);
-      JsonAdapter<List<List<String>>> adapter = moshi.adapter(listType);
+    Moshi moshi = new Moshi.Builder().build();
+    Type listType = Types.newParameterizedType(List.class, List.class, String.class);
+    JsonAdapter<List<List<String>>> adapter = moshi.adapter(listType);
 
-      List<List<String>> response = adapter.fromJson(jsonList);
+    List<List<String>> response = adapter.fromJson(jsonList);
 
-      return response;
-
-    } catch (IOException e) {
-      // In a real system, we wouldn't println like this, but it's useful for demonstration:
-      System.err.println(e.getMessage());
-      System.err.println("BroadbandHandler: string wasn't valid JSON.");
-    } catch (JsonDataException e) {
-      // In a real system, we wouldn't println like this, but it's useful for demonstration:
-      System.err.println(e.getMessage());
-      System.err.println("BroadbandHandler: JSON wasn't in the right format.");
-    }
-    return null;
+    return response;
   }
 }

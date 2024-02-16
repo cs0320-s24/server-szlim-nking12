@@ -1,6 +1,13 @@
 package edu.brown.cs.student.main.server;
 
+import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
+import com.squareup.moshi.Types;
+import edu.brown.cs.student.main.CSVParser.exceptions.FactoryFailureException;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Map;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -34,13 +41,22 @@ public class LoadCSVHandler implements Route {
    * @throws Exception Thrown if an error occurs during request handling.
    */
   @Override
-  public Object handle(Request request, Response response) throws Exception {
+  public Object handle(Request request, Response response)
+      throws IllegalArgumentException, IOException, FactoryFailureException {
+    Moshi moshi = new Moshi.Builder().build();
+    Type type = Types.newParameterizedType(Map.class, String.class, Object.class);
+    JsonAdapter<Map<String, Object>> adapter1 = moshi.adapter(type);
+    Map<String, Object> responseMap = new HashMap<>();
+    try{
     String csv = request.queryParams("csv");
     String headers = request.queryParams("headers");
 
     // directory protection
     if (!csv.contains("data/")) {
-      throw new IllegalArgumentException();
+      responseMap.put("result", "error");
+      responseMap.put("message", "File is outside protected directory. CSV files must be within the data/ directory.");
+      responseMap.put("CSV entered", csv);
+      return adapter1.toJson(responseMap);
     }
 
     boolean hasHeaders;
@@ -49,26 +65,14 @@ public class LoadCSVHandler implements Route {
     } else {
       hasHeaders = headers.equalsIgnoreCase("true");
     }
-    System.out.println(hasHeaders);
     this.state.cleanData(csv, hasHeaders);
-    return new LoadSuccessResponse().serialize();
-  } // need to add error response
-
-  /** A record representing a success response when loading a CSV file. */
-  public record LoadSuccessResponse(String response_type) {
-    /** Constructs a LoadSuccessResponse with the success message. */
-    public LoadSuccessResponse() {
-      this("CSV file successfully loaded.");
+    responseMap.put("result", "success");
+    responseMap.put("message", "CSV file successfully loaded.");
+    return adapter1.toJson(responseMap);
+  } catch (IllegalArgumentException | IOException | FactoryFailureException e){
+      responseMap.put("result", "error");
+      responseMap.put("error", e.getMessage());
+      responseMap.put("csv entered", request.queryParams("csv"));
+      return adapter1.toJson(responseMap);
     }
-
-    /**
-     * @return this response, serialized as Json
-     */
-    String serialize() {
-      Moshi moshi = new Moshi.Builder().build();
-      return moshi
-          .adapter(edu.brown.cs.student.main.server.LoadCSVHandler.LoadSuccessResponse.class)
-          .toJson(this);
-    }
-  }
-}
+}}

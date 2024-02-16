@@ -55,15 +55,10 @@ public class ACSCaching implements ACSDataSource {
    * @return The retrieved data as a list of lists of strings.
    */
   @Override
-  public List<List<String>> getData(String statenum, String countynum) {
+  public List<List<String>> getData(String statenum, String countynum) throws ExecutionException {
     String key = statenum + "," + countynum;
     List<List<String>> result = null;
-    try {
-      result = cache.get(key);
-    } catch (ExecutionException e) {
-      System.err.println(e.getMessage());
-    }
-    System.out.println(cache.stats());
+    result = cache.get(key);
     return result;
   }
 }

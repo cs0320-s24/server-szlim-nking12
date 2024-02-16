@@ -27,13 +27,9 @@ public class CSVSource {
    * @param headers Indicates whether the CSV file contains headers.
    * @return A CSVParser instance for the specified CSV file.
    */
-  private CSVParser<List<String>> makeParser(String filepath, boolean headers) {
-    Reader reader = null;
-    try {
-      reader = new FileReader(filepath);
-    } catch (FileNotFoundException e) {
-      System.err.println("File not found");
-    }
+  private CSVParser<List<String>> makeParser(String filepath, boolean headers)
+      throws FileNotFoundException {
+    Reader reader = new FileReader(filepath);
     return new CSVParser<>(reader, headers, new Creator());
   }
   /**
@@ -50,14 +46,8 @@ public class CSVSource {
   public List<List<String>> cleanData(String filepath, boolean headers)
       throws IOException, FactoryFailureException {
     CSVParser<List<String>> parser = this.makeParser(filepath, headers);
-    try {
-      data = parser.parse();
-      this.headerRow = parser.getHeaders();
-    } catch (IOException e) {
-      System.err.println(e.getMessage());
-    } catch (FactoryFailureException j) {
-      System.err.println("Factory Failure Exception: List of strings could not be created");
-    }
+    data = parser.parse();
+    this.headerRow = parser.getHeaders();
     return data;
   }
   /**

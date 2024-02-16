@@ -20,8 +20,13 @@ import java.util.Map;
  * API.
  */
 public class LocationCodes {
-  /** Constructs a LocationCodes instance. */
-  public LocationCodes() {}
+
+  /**
+   * Constructs a LocationCodes instance.
+   */
+  public LocationCodes() {
+  }
+
   /**
    * Retrieves a map of state codes from the Census API.
    *
@@ -54,36 +59,35 @@ public class LocationCodes {
       }
       return statecodes;
     } catch (IOException | URISyntaxException | JsonDataException | InterruptedException e) {
-      // In a real system, we wouldn't println like this, but it's useful for demonstration:
       return null;
     }
   }
+
   /**
    * Retrieves a map of county codes from the Census API.
    *
    * @return A map of county codes where the key is the county name and the value is the county
-   *     code.
+   * code.
    */
   public Map<String, String> getCountyCodes(String stateCode)
       throws URISyntaxException, IOException, InterruptedException {
-    HttpRequest buildCountyCodeRequest =
-        HttpRequest.newBuilder()
-            .uri(
-                new URI(
-                    "https://api.census.gov/data/2010/dec/sf1?get=NAME&for=county:*&in=state:"
-                        + stateCode))
-            .GET()
-            .build();
-
-    HttpResponse<String> sentCountyCodeResponse =
-        HttpClient.newBuilder()
-            .build()
-            .send(buildCountyCodeRequest, HttpResponse.BodyHandlers.ofString());
-    System.out.println(sentCountyCodeResponse.body());
-
-    Map<String, String> countycodes = new HashMap<>();
-
     try {
+      HttpRequest buildCountyCodeRequest =
+          HttpRequest.newBuilder()
+              .uri(
+                  new URI(
+                      "https://api.census.gov/data/2010/dec/sf1?get=NAME&for=county:*&in=state:"
+                          + stateCode))
+              .GET()
+              .build();
+
+      HttpResponse<String> sentCountyCodeResponse =
+          HttpClient.newBuilder()
+              .build()
+              .send(buildCountyCodeRequest, HttpResponse.BodyHandlers.ofString());
+
+      Map<String, String> countycodes = new HashMap<>();
+
       Moshi moshi = new Moshi.Builder().build();
 
       Type mapType = Types.newParameterizedType(List.class, List.class);
@@ -95,14 +99,7 @@ public class LocationCodes {
         countycodes.put(pair.get(0), pair.get(2));
       }
       return countycodes;
-
-    }
-    // From the Moshi Docs (https://github.com/square/moshi):
-    //   "Moshi always throws a standard java.io.IOException if there is an error reading the JSON
-    // document, or if it is malformed. It throws a JsonDataException if the JSON document is
-    // well-formed, but doesn't match the expected format."
-    catch (IOException | JsonDataException e) {
-      // In a real system, we wouldn't println like this, but it's useful for demonstration:
+    } catch (IOException | URISyntaxException | JsonDataException | InterruptedException e) {
       return null;
     }
   }
