@@ -30,6 +30,25 @@ Caching: ACSCaching optimizes runtime by caching the data. This reduces the need
 - This is more a potential user error that one may encounter that I wanted to mention. If a user indicated that a CSV has headers and it actually does not, and the value they are searching for is in that first row, then the first row will not be considered when searching. However, if a user inputs anything other than yes, it will automatically assume no headers and continue to search the entire file. This is only one specific case
 
 # Tests
+TestBroadband:
+- testMissingCensusRequestFail: checks the API responds appropriately when called without the required parameters. It expects an error response
+- testSuccessfulDataRetrieval: Tests the successful retrieval of broadband data based on state and county parameters. It checks if the response contains the expected values for success and the specified county.
+- testCountyCodeRetrievalFailure: Tests that providing an invalid county code results in the server responding with data for all counties in the specified state.
+- testStateCodeRetrievalFailure: Validates the server's response when an invalid state code is provided. It expects an error response and includes details about the invalid state code.
+- testInvalidParameters: Tests the server's handling of requests with invalid parameters, specifically an invalid state code. 
+
+The test suite utilizes mocked data through a MockedCensusSource and sets up a Spark server for each test case, ensuring an environment for testing the Broadband API endpoint
+
+TestCSV:
+- testLoadHandlerCorrect: tests that the "loadcsv" endpoint successfully loads a CSV file with correct inputs, expecting a response with the status "success."
+- testLoadHandlerProtectedFile: Tests the "loadcsv" endpoint with an attempt to load a file from outside a protected directory. It expects an error response.
+- testLoadHandlerNonexistent: Checks the "loadcsv" endpoint's response when attempting to load a nonexistent CSV file. It expects an error response.
+- testViewNotLoaded: Tests the "viewcsv" endpoint without having loaded a CSV file. It expects an error response indicating that the CSV must be loaded first.
+- testViewSuccess: Tests the "viewcsv" endpoint's response when attempting to view a successfully loaded CSV file, expecting a response with the status "success."
+- testSearchNoResults: Tests the "searchcsv" endpoint with a search term that returns no results. It expects a response indicating that no matches were found.
+- testSearchNotLoaded: Tests the "searchcsv" endpoint without having loaded a CSV file. It expects an error response indicating that the CSV must be loaded first.
+- testSearchSuccessOneResult: Tests the "searchcsv" endpoint's response when a search term returns a single result. It expects a response with the status "success" and the details of the matching row.
+- testSearchMultipleResults: Tests the "searchcsv" endpoint with a search term returning multiple results.It expects a response with the status "success" and the details of the matching row.
 
 # How to
 1. compile and ./run
